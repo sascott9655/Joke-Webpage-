@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Jokes Webpage</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <header>
+        <h1> Jokes Webpage </h1>
+        <div class="subtitle">
+        <p>Upload your best joke and get it rated!</p>
+        </div>
+        <hr>
+    </header>
+    <nav>
+        <div class="hyperlinks">
+        <a href="index.html">Home</a>
+        <a href="login.html">Login</a>
+        <a href="create_account.html">Create Account</a>
+        <a href="top_ten_jokes.html">Best Rated Jokes</a>
+        </div>
+        <hr>
+    </nav>
+    <p> Create an account in order to submit a joke. The joke needs to be approved through
+        the moderator, <em> <b> me Sam Scott </b> </em> ,before it is officially uploaded to the web. Feel
+    welcomed to peruse the website and rate some jokes that you encounter! Thank you! </p>
+    <hr>
+    <main>
+        <section class="joke-form">
+            <h2>Submit a Joke</h2>
+            <form id="jokeForm" method="POST">
+                <textarea id="jokeInput" name="joke" rows="4" cols="50" placeholder="Type your joke here..."required></textarea><br>
+                <button type="submit">Submit Joke</button>
+            </form>
+        </section>
+        <hr>
+        <section class="approved-jokes">
+        <h2>Approved Jokes</h2>
+        {% if jokes %}
+        
+                {% for joke, rating in jokes %}
+                    <li><strong>Rating:</strong> {{rating }}<br>{{joke}}</li><br>
+                {% endfor %}
+            
+        {% else %}
+            <p>No jokes yet... Be the first to submit one!</p>
+        {% endif %}
+        </section>
+    </main>
+    <footer>
+        <hr>
+        <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
+    </footer>
+</body>
+</html>

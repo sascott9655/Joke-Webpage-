@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Jokes Webpage</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/create_account.css') }}">
+</head>
+<body>
+    <header>
+        <h1> Create Account </h1>
+        <div class="subtitle">
+        <p>Create an account to upload jokes and comment on other people's jokes</p>
+        </div>
+        <hr>
+    </header>
+    <nav>
+        <div class="hyperlinks">
+        <a href="index.html">Home</a>
+        <a href="login.html">Login</a>
+        <a href="create_account.html">Create Account</a>
+        <a href="top_ten_jokes.html">Best Rated Jokes</a>
+        </div>
+        <hr>
+    </nav>
+    <main>
+       <form>
+            Create Username: <input type="email" name="user-email" placeholder="you@yourdomain.com">
+            <br>
+            Create Password: <input type="password" name="user-password" autocomplete="current-password">
+       </form>
+    </main>
+    <footer>
+        <hr>
+        <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
+    </footer>
+</body>
+</html>
