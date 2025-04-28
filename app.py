@@ -23,35 +23,42 @@ def initdb():
             ''')
     c.execute('''
               CREATE TABLE IF NOT EXISTS users (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              id INTEGER PRIMARY KEY AUTOINCREMENT, 
               username TEXT UNIQUE NOT NULL,
               password TEXT NOT NULL,
               is_admin INTEGER DEFAULT 0
               )
-            ''')
+            ''') 
+            # Index 0 : user_id
+            # Index 1 : username
+            # Index 2 : password
+            # Index 3: is_admin check
     conn.commit()
     conn.close()
 
 @app.route('/create_account', methods=['GET', 'POST'])
 def register():
+    username = None
+    password = None
     if request.method == 'POST':
-        if not username or not password:
+        if username and password:
             return "Please fill out all fields."
-        username = request.form['username']
-        password = request.form['password']
-        hashed_password = generate_password_hash(password)
+        else:
+            username = request.form['username']
+            password = request.form['password']
+            hashed_password = generate_password_hash(password)
 
-        conn = sqlite3.connect('jokes.db')
-        c = conn.cursor()
+            conn = sqlite3.connect('jokes.db')
+            c = conn.cursor()
 
-        try:
-            c.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
-            conn.commit()
-        except sqlite3.IntegrityError:
-            return "Username already taken."
-        conn.close()
+            try:
+                c.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
+                conn.commit()
+            except sqlite3.IntegrityError:
+                return "Username already taken."
+            conn.close()
 
-        return redirect('/login')
+            return redirect('/')
     return render_template('create_account.html')
 
 
@@ -74,8 +81,10 @@ def index():
     conn.close()
     return render_template('index.html', jokes=jokes)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Getting user information when they type it in
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -83,17 +92,17 @@ def login():
         conn = sqlite3.connect('jokes.db')
         c = conn.cursor()
         c.execute('SELECT id, password, is_admin FROM users WHERE username=?', (username,))
-        user = c.fetchone()
+        user = c.fetchone() # fetch only one user
         conn.close()
 
-        if user and check_password_hash(user[1], password):
-            session['user_id'] = user[0]
-            session['username'] = username
-            if user[2] == 1:
+        if user and check_password_hash(user[1], password): #check_password_hash checks the password with the hashed password (user[1]) to see if they match
+            session['user_id'] = user[0] #set user_id
+            session['username'] = username # set username 
+            if user[2] == 1: #if user is_admin check
                 session['admin'] = True
             else:
                 session['admin'] = False
-            return redirect('/')
+            return redirect('/') #go back to homepage 
         else:
             return 'Invalid credentials'
         
