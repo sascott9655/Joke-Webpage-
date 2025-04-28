@@ -2,31 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Jokes Webpage</title>
+    <title>Admin Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body>
-    <header>
-        <h1> Jokes Webpage </h1>
-        <div class="subtitle">
-        <p>Upload your best joke and get it rated!</p>
-        </div>
-        <hr>
-    </header>
-    <nav>
-        <div class="hyperlinks">
-        <a href="index.html">Home</a>
-        <a href="login.html">Login</a>
-        <a href="create_account.html">Create Account</a>
-        <a href="top_ten_jokes.html">Best Rated Jokes</a>
-        </div>
-        <hr>
-    </nav>
-    <main>
-        <section className="login-info">
-            Username: <input type="email" name="user-email" placeholder="Create username">
-            <br>
-            Password: <input type="password" name="user-password" autocomplete="current-password">
-        <section/>
-    </main>
+        <h1>Login</h1>
+        <form method="POST" action="{{ url_for('login') }}">
+            <label>Username:</label>
+            <input type="text" name="username"><br><br>
+            <label>Password:</label>
+            <input type="password" name="password"><br><br>
+            <input type="submit" value="Login">
+        </form>
+    </body>
     </html>

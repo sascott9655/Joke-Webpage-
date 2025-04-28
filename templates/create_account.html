@@ -15,18 +15,25 @@
     </header>
     <nav>
         <div class="hyperlinks">
-        <a href="index.html">Home</a>
-        <a href="login.html">Login</a>
-        <a href="create_account.html">Create Account</a>
+        <a href="/">Home</a>
+        <a href="/login">Login</a>
+        <a href="/create_account">Create Account</a>
         <a href="top_ten_jokes.html">Best Rated Jokes</a>
         </div>
         <hr>
     </nav>
     <main>
-       <form>
-            Create Username: <input type="email" name="user-email" placeholder="you@yourdomain.com">
-            <br>
-            Create Password: <input type="password" name="user-password" autocomplete="current-password">
+       <form method='POST'>
+
+        {% if error %}
+            <p style="color:red;">{{ error }}</p>
+        {% endif %}
+
+        <label>Create Username:</label>
+        <input type="text" name="username"><br><br>
+        <label>Create Password:</label>
+        <input type="password" name="password" autocomplete="current-password"><br><br>
+        <input type="submit" value="Create Account!">
        </form>
     </main>
     <footer>

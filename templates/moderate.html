@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title> Moderator Panel </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/moderate.css') }}">
+    <script src="{{ url_for('static', filename='js/moderate.js') }}"></script>
+</head>
+<body>
+    <h1>Moderator Panel</h1>
+    {% for joke in jokes %}
+        <div class="joke-box" id="joke-{{ joke[0] }}">
+            <p>{{ joke[1] }}</p>
+            <small>Submitted: {{ joke[2] }}</small>
+            <button onclick="approveJoke('{{ joke[0] }}')">Approve</button>
+            <button onclick="rejectJoke('{{ joke[0] }}')">Reject</button>
+        </div>
+        {% endfor %}
+        <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+
+
+</head>
+</html>
