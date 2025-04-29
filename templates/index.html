@@ -8,19 +8,26 @@
 <body>
     <header>
         <h1> Jokes Webpage </h1>
-        <!--  -->
         {% if username %}
-            <p>Welcome {{username }}!</p>
+            <p>Welcome {{ username }}!</p>
             <form action="{{ url_for('logout') }}" method="GET">
                 <button type="submit">Logout</button>
-                
             </form>
         {% endif %}
         <div class="subtitle">
-        <p>Upload your best joke and get it rated!</p>
+            <p>Upload your best joke and get it rated!</p>
         </div>
         <hr>
     </header>
+    
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-message">
+          <p>{{ messages[0] }}</p>
+        </div>
+      {% endif %}
+    {% endwith %}
+    
     <nav>
         <div class="hyperlinks">
         <a href="/">Home</a>
