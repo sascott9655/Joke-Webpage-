@@ -13,6 +13,7 @@
             <p>Welcome {{username }}!</p>
             <form action="{{ url_for('logout') }}" method="GET">
                 <button type="submit">Logout</button>
+                
             </form>
         {% endif %}
         <div class="subtitle">
@@ -34,18 +35,17 @@
     welcomed to peruse the website and rate some jokes that you encounter! Thank you! </p>
     <hr>
     <main>
-        <section class="joke-form">
+        <!-- <section class="joke-form">
             <h2>Submit a Joke</h2>
             <form id="jokeForm" method="POST">
                 <textarea id="jokeInput" name="joke" rows="4" cols="50" placeholder="Type your joke here..."></textarea><br>
                 <button type="submit">Submit Joke</button>
             </form>
-        </section>
+        </section> -->
         <hr>
         <section class="approved-jokes">
         <h2>Approved Jokes</h2>
         {% if jokes %}
-        
                 {% for joke, rating in jokes %}
                     <li><strong>Rating:</strong> {{rating }}<br>{{joke}}</li><br>
                 {% endfor %}
