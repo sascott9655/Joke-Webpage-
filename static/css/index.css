@@ -42,3 +42,11 @@ button{
 .approved-jokes{
 	text-align: center;
 }
+.flash-message{
+	background-color: purple;
+	color: brown;
+	border: 2px, solid, black;
+	padding: 10px;
+	margin: 15px;
+	border-radius: 5px;
+}
