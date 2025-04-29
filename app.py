@@ -13,13 +13,13 @@ def initdb():
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
     c.execute('''
-                CREATE TABLE IF NOT EXISTS jokes (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    content TEXT NOT NULL,
-                    timestamp TEXT NOT NULL,
-                    rating REAL DEFAULT 0,
-                    approved INTEGER DEFAULT 0
-                    )
+            CREATE TABLE IF NOT EXISTS jokes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            content TEXT NOT NULL,
+            timestamp TEXT NOT NULL,
+            rating REAL DEFAULT 0,
+            approved INTEGER DEFAULT 0
+            )
             ''')
     c.execute('''
               CREATE TABLE IF NOT EXISTS users (
@@ -79,7 +79,10 @@ def index():
     c.execute('SELECT content, rating FROM jokes WHERE approved=1 ORDER BY rating DESC')
     jokes = c.fetchall()
     conn.close()
-    return render_template('index.html', jokes=jokes)
+
+    username = session.get('username') # get username from session if logged in
+
+    return render_template('index.html', jokes=jokes, username=username)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -110,8 +113,8 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.clear()
-    return redirect('/')
+    session.clear() # Clears all session data (logs out user/admin)
+    return redirect(url_for('index')) #Takes you to the homepage
 
 @app.route('/moderate')
 def moderate():
