@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Submit a Joke</title>
+    </head>
+    <body>
+        <h1>Submit a Joke</h1>
+        <form method="POST">
+            <textarea name="joke" rows="5" cols="60" placeholder="Enter your joke here"></textarea><br>
+            <button type="submit">Submit</button>
+        </form>
+        <a href="{{url_for('index')}}">Back to Home</a>
+    </body>
+</html>

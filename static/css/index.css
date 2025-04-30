@@ -1,23 +1,12 @@
 body{
 	background-color:rgb(202, 241, 255);
+	text-align: center;
 }
-
 h1 {
 	color: blue;
-	text-align: center;
    }
-.subtitle{
-	text-align: center;
-}
-footer{
-	text-align: center;
-}
-.hyperlinks{
-	text-align: center;
-}
 p{
 	font-size: 18px;
-	text-align: center;
 	/* padding-top: 5px;
 	padding-right: 50px;
 	padding-bottom: 5px;
@@ -26,27 +15,31 @@ p{
 	border: 3px double lightskyblue;
 	border-radius: 15px;
 }
-h2{
-	text-align: center;
-}
-.joke-form{
-	text-align: center;
-}
-.joke-list{
-	text-align: center;
+main{
+	display: flex;
+	justify-content: center;	
+	align-items: center;
+	flex-direction: column;
 }
 button{
 	border-radius: 15px;
 	box-shadow: 3px 3px 5px grey;
 }
-.approved-jokes{
-	text-align: center;
-}
 .flash-message{
 	background-color: purple;
-	color: brown;
+	color: white;
 	border: 2px, solid, black;
 	padding: 10px;
 	margin: 15px;
 	border-radius: 5px;
+}
+.scroll-box{
+	height:400px;
+	width:400px;
+	border:1px solid #ccc;
+	font:16px/26px Georgia, Garamond, Serif;
+	overflow:auto;
+}
+.joke-space{
+	margin-bottom: 20px;
 }

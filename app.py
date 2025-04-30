@@ -17,6 +17,7 @@ def initdb():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             content TEXT NOT NULL,
             timestamp TEXT NOT NULL,
+            username TEXT,
             rating REAL DEFAULT 0,
             approved INTEGER DEFAULT 0
             )
@@ -72,9 +73,10 @@ def index():
         
         joke = request.form['joke']
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        username = session.get('username') # get username from session if logged in
         conn = sqlite3.connect('jokes.db')
         c = conn.cursor()
-        c.execute('INSERT INTO jokes (content, timestamp) VALUES (?, ?)', (joke, timestamp))
+        c.execute('INSERT INTO jokes (content, timestamp, username) VALUES (?, ?, ?)', (joke, timestamp,username))
         conn.commit()
         conn.close()
         flash("Joke submitted for approval!")
@@ -82,12 +84,11 @@ def index():
 
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
-    c.execute('SELECT content, rating FROM jokes WHERE approved=1 ORDER BY rating DESC')
+    c.execute('SELECT content, rating, username FROM jokes WHERE approved=1 ORDER BY rating DESC')
     jokes = c.fetchall()
     conn.close()
 
-    username = session.get('username') # get username from session if logged in
-    return render_template('index.html', jokes=jokes, username=username)
+    return render_template('index.html', jokes=jokes, username=session.get('username'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -118,13 +119,27 @@ def login():
 
 @app.route('/logout')
 def logout():
-    print('Before Logout')
     username = session.get('username', '')
-    print('Logout')
     session.clear() # Clears all session data (logs out user/admin)
-    print('After Logout')
     flash(f"You have been logged out, {username}")
     return redirect(url_for('index')) #Takes you to the homepage
+
+@app.route('/submit_joke', methods=['GET', 'POST'])
+def submit_joke():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        joke = request.form['joke']
+        username = session['username']
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        conn = sqlite3.connect('jokes.db')
+        c = conn.cursor()
+        c.execute('INSERT into jokes (content, timestamp, username) VALUES (?, ?, ?)', (joke, timestamp, username))
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for('index'))
 
 @app.route('/moderate')
 def moderate():
