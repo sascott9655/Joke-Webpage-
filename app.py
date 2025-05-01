@@ -42,10 +42,6 @@ def register():
     if request.method == 'POST':
             password = request.form['password'] #Content in the password box
             username = request.form['username'] #Content in the username box
-
-            if not username or not password: #checking if at least one of the contents is missing
-                flash("Please fill out all the fields.")
-                return render_template('create_account.html')
             
             hashed_password = generate_password_hash(password)
             conn = sqlite3.connect('jokes.db')
@@ -140,6 +136,8 @@ def submit_joke():
         conn.close()
 
         return redirect(url_for('index'))
+    
+    return render_template("submit_joke.html", username=session['username'])
 
 @app.route('/moderate')
 def moderate():
