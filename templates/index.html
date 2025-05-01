@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Jokes Webpage</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <script> src="{{ url_for('static', filename='index.js') }}"</script>
 </head>
 <body>
     <header>
@@ -32,8 +33,8 @@
         <a href="/">Home</a>
         <a href="/login">Login</a>
         <a href="/create_account">Create Account</a>
-        <a href="top_ten_jokes">Best Rated Jokes</a>
         <a href="/submit_joke">Submit Joke</a>
+        <a href="/moderate">Moderate</a>
         </div>
         <hr>
     </nav>
@@ -49,6 +50,11 @@
                         <strong>{{ joke[2] or "Anonymous" }}</strong>: {{ joke[0] }}<br>
                         Rating: {{ joke[1] or 0 }} / 5
                         <!-- Later: Add a form or JavaScript-based rating system -->
+                        {% if session.get('admin') %}
+                         <form method="POST" action = "{{ url_for('delete_joke', joke_id=joke[3]) }}">
+                            <button class="delete-button" type="submit">Delete</button>
+                         </form>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>

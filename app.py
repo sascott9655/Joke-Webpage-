@@ -80,7 +80,7 @@ def index():
 
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
-    c.execute('SELECT content, rating, username FROM jokes WHERE approved=1 ORDER BY rating DESC')
+    c.execute('SELECT content, rating, username, id FROM jokes WHERE approved=1 ORDER BY rating DESC')
     jokes = c.fetchall()
     conn.close()
 
@@ -175,6 +175,21 @@ def reject_joke(joke_id):
     conn.close()
     flash('Joke rejected')
     return '', 204
+
+@app.route('/delete_joke/<int:joke_id>', methods=['POST'])
+def delete_joke(joke_id):
+    if not session.get('admin'):
+        flash("Unauthorized: Only admins can delete jokes.")
+        return redirect(url_for('index'))
+    
+    conn = sqlite3.connect('jokes.db')
+    c = conn.cursor()
+    c.execute('DELETE FROM jokes WHERE id=?', (joke_id,))
+    conn.commit()
+    conn.close()
+
+    flash("Joke deleted.")
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     initdb()

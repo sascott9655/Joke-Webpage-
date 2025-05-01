@@ -43,3 +43,7 @@ button{
 .joke-space{
 	margin-bottom: 20px;
 }
+.delete-button{
+	border-radius: 15px;
+	box-shadow: 3px 3px 5px grey;
+}
