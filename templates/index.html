@@ -9,10 +9,12 @@
 <body>
     <header>
         <h1> Jokes Webpage </h1>
+        <!-- Displays username on the homepage if they are logged in -->
         {% if username %}
             <p>Welcome {{ username }}!</p>
+            <!-- Logout button to log out user -->
             <form action="{{ url_for('logout') }}" method="GET">
-                <button type="submit">Logout</button>
+                <button type="submit">Logout</button> 
             </form>
         {% endif %}
         <div class="subtitle">
@@ -20,6 +22,7 @@
         </div>
         <hr>
     </header>
+    <!-- This shows all the flash messages that show on the homepage -->
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <div class="flash-message"> 
@@ -45,18 +48,22 @@
     <main>
         <!-- Scroll Box -->
             <div class="scroll-box">
+                <!-- Display jokes in the scroll box -->
                 {% for joke in jokes %}
                     <div class="joke-space">
                         <strong>{{ joke[2] or "Anonymous" }}</strong>: {{ joke[0] }}<br>
                         Rating: {{ joke[1] or 0 }} / 5
                         <!-- Later: Add a form or JavaScript-based rating system -->
+
+                         <!-- If you are admin you may delete jokes (connected by a js function in index.js) -->
                         {% if session.get('admin') %}
                          <form method="POST" action = "{{ url_for('delete_joke', joke_id=joke[3]) }}">
                             <button class="delete-button" type="submit">Delete</button>
                          </form>
                         {% endif %}
                     </div>
-                {% endfor %}
+                {% endfor %} 
+                <!-- End of the list of jokes -->
             </div>
     </main>
     <footer>

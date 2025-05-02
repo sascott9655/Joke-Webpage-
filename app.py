@@ -1,3 +1,9 @@
+# Jokes Webpage Project by Sam Scott
+# Created 4/14/25
+#---------------------------------------------------------------------------------------------------------------------------------------------
+#Consideration: 1. conn = sqlite3.connect('jokes.db') 2. c = conn.cursor() 3. conn.commit() 4.  conn.close() these line of code are often used 
+#maybe considering writing a function for these database calls
+#---------------------------------------------------------------------------------------------------------------------------------------------
 from flask import Flask, request, render_template, redirect, url_for, flash, session
 import sqlite3
 from datetime import datetime
@@ -13,17 +19,17 @@ def initdb():
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
     c.execute('''
-            CREATE TABLE IF NOT EXISTS jokes (
+            CREATE TABLE IF NOT EXISTS jokes (  -- jokes table for users to insert jokes
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             content TEXT NOT NULL,
             timestamp TEXT NOT NULL,
             username TEXT,
-            rating REAL DEFAULT 0,
+            rating REAL DEFAULT 0, 
             approved INTEGER DEFAULT 0
             )
             ''')
     c.execute('''
-              CREATE TABLE IF NOT EXISTS users (
+              CREATE TABLE IF NOT EXISTS users ( --users table 
               id INTEGER PRIMARY KEY AUTOINCREMENT, 
               username TEXT UNIQUE NOT NULL,
               password TEXT NOT NULL,
@@ -43,41 +49,26 @@ def register():
             password = request.form['password'] #Content in the password box
             username = request.form['username'] #Content in the username box
             
-            hashed_password = generate_password_hash(password)
+            hashed_password = generate_password_hash(password) #have password hashed for security purposes
             conn = sqlite3.connect('jokes.db')
             c = conn.cursor()
-
+            
+            #try catch block to check if username has not been used and for the username and password to match
             try:
                 c.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
                 conn.commit()
                 flash('Account created succesfully!')
             except sqlite3.IntegrityError:
                 flash("Username already taken.")
-                return render_template('create_account.html')
+                return render_template('create_account.html') #if account creating fails render back to it to try again
             conn.close()
-            return redirect(url_for('login'))
+            return redirect(url_for('login')) #login if successful
     
-    return render_template('create_account.html')
+    return render_template('create_account.html') #default to the create account page 
 
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    if request.method == 'POST':
-        if not session.get('username'):
-            flash("You must be logged in to submit jokes.")
-            return redirect(url_for('login'))
-        
-        joke = request.form['joke']
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        username = session.get('username') # get username from session if logged in
-        conn = sqlite3.connect('jokes.db')
-        c = conn.cursor()
-        c.execute('INSERT INTO jokes (content, timestamp, username) VALUES (?, ?, ?)', (joke, timestamp,username))
-        conn.commit()
-        conn.close()
-        flash("Joke submitted for approval!")
-        return redirect(url_for('index'))
-
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
     c.execute('SELECT content, rating, username, id FROM jokes WHERE approved=1 ORDER BY rating DESC')
@@ -91,31 +82,30 @@ def index():
 def login():
     # Getting user information when they type it in
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form['username'] #check if value is in the username box
+        password = request.form['password'] #check if value is in the password box
 
         conn = sqlite3.connect('jokes.db')
         c = conn.cursor()
-        c.execute('SELECT id, password, is_admin FROM users WHERE username=?', (username,))
-        user = c.fetchone() # fetch only one user
+        c.execute('SELECT id, password, is_admin FROM users WHERE username=?', (username,)) #check if username exists in db
+        user = c.fetchone() # fetch the username if that's the case
         conn.close()
 
-        if user and check_password_hash(user[1], password): #check_password_hash checks the password with the hashed password (user[1]) to see if they match
+        if user and check_password_hash(user[1], password): #check if the username and password match
             session['user_id'] = user[0] #set user_id
             session['username'] = username # set username
-            session['admin'] = (user[2] == 1)
-            
+            session['admin'] = (user[2] == 1) #check if they are admin
             flash(f'Welcome back,{username}')
-            return redirect(url_for('index')) 
+            return redirect(url_for('index')) #redirect back to the home page when you login 
         else:
-            flash('Invalid username')
-            return render_template("login.html") #go back to login page
+            flash('Invalid username') 
+            return render_template("login.html") #go back to login page 
 
-    return render_template("login.html")
+    return render_template("login.html") #go back to the login page as default
 
 @app.route('/logout')
 def logout():
-    username = session.get('username', '')
+    username = session.get('username', '') #empty string if username doesnt exist
     session.clear() # Clears all session data (logs out user/admin)
     flash(f"You have been logged out, {username}")
     return redirect(url_for('index')) #Takes you to the homepage
@@ -123,7 +113,7 @@ def logout():
 @app.route('/submit_joke', methods=['GET', 'POST'])
 def submit_joke():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('login')) #cant submit a joke unless you are logged in
     if request.method == 'POST':
         joke = request.form['joke']
         username = session['username']
@@ -134,21 +124,21 @@ def submit_joke():
         c.execute('INSERT into jokes (content, timestamp, username) VALUES (?, ?, ?)', (joke, timestamp, username))
         conn.commit()
         conn.close()
-
-        return redirect(url_for('index'))
+        flash("Waiting for admin approval. Your joke should appear on the homepage if the joke is approved.")
+        return redirect(url_for('index')) #if you are able to make a joke successfully then go to the homepage and wait for the admin to approve of it
     
     return render_template("submit_joke.html", username=session['username'])
 
 @app.route('/moderate')
 def moderate():
     if not session.get('admin'):
-        flash("Access denied. Admin privileges required.")
+        flash("Access denied. Admin privileges required.") #Admin approval to moderate
         return redirect(url_for('index'))
     
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
-    c.execute('SELECT id, content, timestamp FROM jokes WHERE approved=0')
-    jokes = c.fetchall()
+    c.execute('SELECT id, content, timestamp FROM jokes WHERE approved=0') 
+    jokes = c.fetchall() #find all unapproved jokes to moderate
     conn.close()
 
     return render_template('moderate.html', jokes=jokes)
@@ -156,13 +146,13 @@ def moderate():
 @app.route('/approve/<int:joke_id>', methods=['POST'])
 def approve_joke(joke_id):
     if not session.get('admin'):
-        return '', 403
+        return '', 403 #block non-admins
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
-    c.execute('UPDATE jokes SET approved=1 WHERE id=?', (joke_id,))
+    c.execute('UPDATE jokes SET approved=1 WHERE id=?', (joke_id,)) #update the home page if the joke is approved
     conn.commit()
     conn.close()
-    return '', 204
+    return '', 204 #no content, but request is successful 
 
 @app.route('/reject/<int:joke_id>', methods=['POST'])
 def reject_joke(joke_id):
@@ -170,13 +160,13 @@ def reject_joke(joke_id):
         return '', 403
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
-    c.execute('DELETE FROM jokes WHERE id=?', (joke_id,))
+    c.execute('DELETE FROM jokes WHERE id=?', (joke_id,)) #delete the joke from the database
     conn.commit()
     conn.close()
     flash('Joke rejected')
     return '', 204
 
-@app.route('/delete_joke/<int:joke_id>', methods=['POST'])
+@app.route('/delete_joke/<int:joke_id>', methods=['POST']) #This route is different from the reject route. It allows admins to delete jokes from the homepage(probably a temporary feature)
 def delete_joke(joke_id):
     if not session.get('admin'):
         flash("Unauthorized: Only admins can delete jokes.")
@@ -184,7 +174,7 @@ def delete_joke(joke_id):
     
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
-    c.execute('DELETE FROM jokes WHERE id=?', (joke_id,))
+    c.execute('DELETE FROM jokes WHERE id=?', (joke_id,)) 
     conn.commit()
     conn.close()
 
