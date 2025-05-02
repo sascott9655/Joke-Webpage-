@@ -53,8 +53,19 @@
                     <div class="joke-space">
                         <strong>{{ joke[2] or "Anonymous" }}</strong>: {{ joke[0] }}<br>
                         Rating: {{ joke[1] or 0 }} / 5
-                        <!-- Later: Add a form or JavaScript-based rating system -->
-
+                        {% if session.get('user_id') %}
+                        <!-- Connects to the rate_joke route so users can rate your jokes -->
+                            <form method="POST" action="{{ url_for('rate_joke', joke_id = joke[1]) }}"> 
+                                Rate:
+                                <!-- Gives the user the ability to rate a joke on a scale of 1 to 5 stars -->
+                                {% for i in range(1,6) %}
+                                    <label>
+                                        <input type="radio" name="rating" value="{{ i }}" required> {{ i }}
+                                    </label>
+                                {% endfor %}
+                                <button type="submit">Submit Rating</button>
+                            </form>
+                        {% endif %}
                          <!-- If you are admin you may delete jokes (connected by a js function in index.js) -->
                         {% if session.get('admin') %}
                          <form method="POST" action = "{{ url_for('delete_joke', joke_id=joke[3]) }}">

@@ -18,28 +18,36 @@ ADMIN_PASSWORD = 'password123'
 def initdb():
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
+    #--------------jokes table----------------------------------------------------------
     c.execute('''
             CREATE TABLE IF NOT EXISTS jokes (  -- jokes table for users to insert jokes
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            content TEXT NOT NULL,
-            timestamp TEXT NOT NULL,
-            username TEXT,
-            rating REAL DEFAULT 0, 
-            approved INTEGER DEFAULT 0
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                content TEXT NOT NULL,
+                timestamp TEXT NOT NULL,
+                username TEXT,
+                rating REAL DEFAULT 0, 
+                approved INTEGER DEFAULT 0
             )
             ''')
+    #--------------users table----------------------------------------------------------
     c.execute('''
               CREATE TABLE IF NOT EXISTS users ( --users table 
-              id INTEGER PRIMARY KEY AUTOINCREMENT, 
-              username TEXT UNIQUE NOT NULL,
-              password TEXT NOT NULL,
-              is_admin INTEGER DEFAULT 0
+                id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                is_admin INTEGER DEFAULT 0
               )
-            ''') 
-            # Index 0 : user_id
-            # Index 1 : username
-            # Index 2 : password
-            # Index 3: is_admin check
+              ''') 
+    #--------------ratings table--------------------------------------------------------
+    c.execute('''
+              CREATE TABLE  IF NOT EXISTS ratings(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                joke_id INTEGER,
+                rating INTEGER,
+                UNIQUE(user_id, joke_id) --prevent multiple ratings per user per joke
+              )
+              ''')
     conn.commit()
     conn.close()
 
@@ -143,6 +151,8 @@ def moderate():
 
     return render_template('moderate.html', jokes=jokes)
 
+#These routes are dynamic routes in Flask. They extract the integer value joke_id from the URL and pass into the variable joke_id. 
+
 @app.route('/approve/<int:joke_id>', methods=['POST'])
 def approve_joke(joke_id):
     if not session.get('admin'):
@@ -180,6 +190,36 @@ def delete_joke(joke_id):
 
     flash("Joke deleted.")
     return redirect(url_for('index'))
+
+@app.route('/rate_joke/<int:joke_id>', methods=['POST']) 
+def rate_joke(joke_id):
+    if 'user_id' not in session: #checks if the user_id is in the session dictionary and user_id is a key, and keys in Python dictionary are strings.
+        flash("You must be logged in to rate jokes.")
+        return redirect(url_for('login'))
+    
+    rating = int(request.form['rating'])
+    user_id = session['user_id']
+
+    conn = sqlite3.connect('jokes.db')
+    c = conn.cursor()
+    c.execute('''INSERT OR REPLACE INTO ratings(user_id, joke_id, rating) VALUES (?,?,?)''', (user_id, joke_id, rating)) #The INSERT OR REPLACE statement in SQLITE is used to add a new row or replace an existing row.
+    #This is useful because if you are a user you can rewrite a new review and have your new review overwrite the old one
+    c.execute('''
+              UPDATE jokes --modifying the jokes table
+              SET rating = ( --subquery that updates the rating column in the jokes table, and the new value comes from the average of the ratings from the ratings table
+                  SELECT AVG(rating)
+                  FROM ratings
+                  WHERE joke_id=?
+              )
+              WHERE id=? --ensures you are updating only the joke you are rating and that it matches to the joke_id in the subquery
+              ''', (joke_id, joke_id) # first joke_id is the subquery the second joke_id is the jokes table column jokes_id 
+              ) 
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('index'))
+
+     
 
 if __name__ == "__main__":
     initdb()
