@@ -202,15 +202,18 @@ def rate_joke(joke_id):
 
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
-    c.execute('''INSERT OR REPLACE INTO ratings(user_id, joke_id, rating) VALUES (?,?,?)''', (user_id, joke_id, rating)) #The INSERT OR REPLACE statement in SQLITE is used to add a new row or replace an existing row.
+    c.execute('''INSERT OR REPLACE INTO ratings(user_id, joke_id, rating)
+    VALUES (?,?,?)''',
+    (user_id, joke_id, rating)) #The INSERT OR REPLACE statement in SQLITE is used to add a new row or replace an existing row.
     #This is useful because if you are a user you can rewrite a new review and have your new review overwrite the old one
+
     c.execute('''
               UPDATE jokes --modifying the jokes table
-              SET rating = ( --subquery that updates the rating column in the jokes table, and the new value comes from the average of the ratings from the ratings table
+              SET rating = ROUND(( --subquery that updates the rating column in the jokes table, and the new value comes from the average of the ratings from the ratings table
                   SELECT AVG(rating)
                   FROM ratings
                   WHERE joke_id=?
-              )
+              ), 1)
               WHERE id=? --ensures you are updating only the joke you are rating and that it matches to the joke_id in the subquery
               ''', (joke_id, joke_id) # first joke_id is the subquery the second joke_id is the jokes table column jokes_id 
               ) 

@@ -55,15 +55,17 @@
                         Rating: {{ joke[1] or 0 }} / 5
                         {% if session.get('user_id') %}
                         <!-- Connects to the rate_joke route so users can rate your jokes -->
-                            <form method="POST" action="{{ url_for('rate_joke', joke_id = joke[1]) }}"> 
-                                Rate:
-                                <!-- Gives the user the ability to rate a joke on a scale of 1 to 5 stars -->
-                                {% for i in range(1,6) %}
-                                    <label>
-                                        <input type="radio" name="rating" value="{{ i }}" required> {{ i }}
-                                    </label>
-                                {% endfor %}
-                                <button type="submit">Submit Rating</button>
+                         <!-- Changing joke[1] to joke[3] because joke[3] is the rating integer value in our ratings table -->
+                            <form method="POST" action="{{ url_for('rate_joke', joke_id = joke[3]) }}">  
+                                <!-- label for I believe labels each of the jokes with the prompt rate this joke -->
+                                 <label for="rating">Rate this joke:</label>
+                                 <select name="rating" required>
+                                    <option value="">--</option>
+                                    {% for i in range(1, 6) %}
+                                    <option value="{{ i }}">{{ i }}</option>
+                                    {% endfor %}
+                                 </select>
+                                 <button type="submit">Submit</button>
                             </form>
                         {% endif %}
                          <!-- If you are admin you may delete jokes (connected by a js function in index.js) -->
