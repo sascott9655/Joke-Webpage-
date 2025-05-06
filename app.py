@@ -18,6 +18,8 @@ ADMIN_PASSWORD = 'password123'
 def initdb():
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
+    c.execute("PRAGMA foreign_keys = ON")  # Enable foreign key enforcement
+    c.execute('DROP TABLE IF EXISTS ratings')
     #--------------jokes table----------------------------------------------------------
     c.execute('''
             CREATE TABLE IF NOT EXISTS jokes (  -- jokes table for users to insert jokes
@@ -45,7 +47,10 @@ def initdb():
                 user_id INTEGER,
                 joke_id INTEGER,
                 rating INTEGER,
+                comment TEXT,
                 UNIQUE(user_id, joke_id) --prevent multiple ratings per user per joke
+                FOREIGN KEY (user_id) REFERENCES users(id) -- checks to see if user_id exists in the users table and connects them 
+                FOREIGN KEY (joke_id) REFERENCES jokes(id) -- checks to see if joke_id exists in the jokes table and connects them 
               )
               ''')
     conn.commit()
@@ -199,27 +204,45 @@ def rate_joke(joke_id):
     
     rating = int(request.form['rating'])
     user_id = session['user_id']
+    comment = request.form.get('comment', '').strip() #do I want comment to be able to be empty? Testing needed to confirm
+
+    if not rating or not comment:
+        flash("You must provide both a rating and a comment.")
+        return redirect(url_for('index'))
 
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
-    c.execute('''INSERT OR REPLACE INTO ratings(user_id, joke_id, rating)
-    VALUES (?,?,?)''',
-    (user_id, joke_id, rating)) #The INSERT OR REPLACE statement in SQLITE is used to add a new row or replace an existing row.
-    #This is useful because if you are a user you can rewrite a new review and have your new review overwrite the old one
+
+    c.execute('''INSERT OR REPLACE INTO ratings(user_id, joke_id, rating, comment) --The INSERT OR REPLACE statement in SQLITE is used to add a new row or replace an existing row.
+    -- This is useful because if you are a user you can rewrite a new review and have your new review overwrite the old one
+    VALUES (?,?,?,?)
+    ON CONFLICT(user_id, joke_id) --If there is already a record for this user and joke, a conflict will occur(b/c user_id and joke_id are primary keys)
+    DO UPDATE SET rating = excluded.rating, comment=excluded.comment -- Update the existing rating adn comment with new values instead of throwing an error.
+    ''',
+    (user_id, joke_id, rating, comment)) 
 
     c.execute('''
               UPDATE jokes --modifying the jokes table
-              SET rating = ROUND(( --subquery that updates the rating column in the jokes table, and the new value comes from the average of the ratings from the ratings table
-                  SELECT AVG(rating)
+              SET rating = ( --subquery that updates the rating column in the jokes table, and the new value comes from the average of the ratings from the ratings table
+                  SELECT ROUND(AVG(rating), 1)
                   FROM ratings
                   WHERE joke_id=?
-              ), 1)
+              )
               WHERE id=? --ensures you are updating only the joke you are rating and that it matches to the joke_id in the subquery
               ''', (joke_id, joke_id) # first joke_id is the subquery the second joke_id is the jokes table column jokes_id 
               ) 
+            #test before 
+    # c.execute('''
+    #         SELECT ratings.comment, ratings.rating, users.username
+    #         FROM ratings
+    #         JOIN users ON ratings.user_id = users.id
+    #         WHERE ratings, joke_id=?
+    #         '''(joke_id,)
+    #         )
     conn.commit()
     conn.close()
 
+    flash("Your rating and comment have been submitted.")
     return redirect(url_for('index'))
 
      
