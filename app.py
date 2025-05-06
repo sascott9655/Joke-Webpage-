@@ -89,6 +89,38 @@ def index():
     conn.close()
 
     return render_template('index.html', jokes=jokes, username=session.get('username'))
+    # conn = sqlite3.connect('jokes.db')
+    # conn.row_factory = sqlite3.Row # Allows dictionary-like row access
+    # c = conn.cursor()
+
+    # c.execute('SELECT content, rating, username, id FROM jokes WHERE approved=1 ORDER BY rating DESC')
+    # jokes = c.fetchall()
+
+    # c.execute('''
+    #         SELECT ratings.joke_id, ratings.comment, ratings.rating, users.username
+    #         FROM ratings
+    #         JOIN users ON ratings.user_id = users.id
+    #         '''
+    #         )
+    # comments = c.fetchall()
+
+    # # Creating a dict where the keys are joke_id and the values are lists of comments
+    # joke_comments = {}
+    # print([type(row['joke_id']) for row in comments])
+    # for row in comments:
+    #     joke_id = row['joke_id']
+    #     if joke_id not in joke_comments:
+    #         joke_comments['joke_id'] = []
+    #     joke_comments[joke_id].append({
+    #         'username': row['username'],
+    #         'rating': row['rating'],
+    #         'comment': row['comment']
+    #     })
+
+    # conn.close()
+
+    # #Sending the list of jokes and having joke_comments have each joke_id match up to its associated comment
+    # return render_template('index.html', jokes=jokes, joke_comments=joke_comments)
 
 
 @app.route('/login', methods=['GET', 'POST'])

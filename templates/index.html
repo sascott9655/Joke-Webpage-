@@ -9,6 +9,7 @@
 <body>
     <header>
         <h1> Jokes Webpage </h1>
+        <h2>Under major construction!!!</h2>
         <!-- Displays username on the homepage if they are logged in -->
         {% if username %}
             <p>Welcome {{ username }}!</p>
@@ -55,7 +56,7 @@
                         Rating: {{ joke[1] or 0 }} / 5
                         {% if session.get('user_id') %}
                         <!-- Connects to the rate_joke route so users can rate your jokes -->
-                         <!-- Changing joke[1] to joke[3] because joke[3] is the rating integer value in our ratings table -->
+                         <!-- Changing joke[3] to joke['id'] because of conn.row_factory = sqlite3.Row in our index Flask route -->
                             <form method="POST" action="{{ url_for('rate_joke', joke_id = joke[3]) }}">  
                                 <!-- label for I believe labels each of the jokes with the prompt rate this joke -->
                                  <label for="rating">Rate this joke:</label>
@@ -71,6 +72,19 @@
 
                                  <button type="submit">Submit</button>
                             </form>
+
+
+                            {% if joke['id'] in joke_comments %}
+                                <div class ="comments">
+                                    <h4>Comments: </h4>
+                                    {% for comment in joke_comments[joke['3']] %}
+                                        <div class="comment">
+                                            <strong>{{ comment.username }}</strong> ({{ comment.rating }}/5):
+                                            <em>{{ comment.comment }}</em>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         {% endif %}
                          <!-- If you are admin you may delete jokes (connected by a js function in index.js) -->
                         {% if session.get('admin') %}
