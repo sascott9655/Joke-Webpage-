@@ -11,3 +11,22 @@ document.addEventListener('DOMContentLoaded', function(){
         button.addEventListener('click', deleteJoke);
     });
 });
+
+function toggleComments(id){
+    const commentsDiv = document.getElementById(id);
+    if(commentsDiv.style.display === "none") {
+        commentsDiv.style.display = "block";
+    } else {
+        commentsDiv.style.display = "none";
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+    commentButton.forEach(function(button){
+        const jokeId = button.getAttribute('data-joke-id');
+        const commentDivId = `comments-${jokeId}`;
+        button.addEventListener('click', function(){
+            toggleComments(commentDivId);
+        });
+    })
+});

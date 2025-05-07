@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Jokes Webpage</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    <script> src="{{ url_for('static', filename='index.js') }}"</script>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
 </head>
 <body>
     <header>
@@ -73,18 +73,17 @@
                                  <button type="submit">Submit</button>
                             </form>
 
-
-                            {% if joke['id'] in joke_comments %}
-                                <div class ="comments">
+                            {% if joke[3] in joke_comments %}
+                                <button id ="comments-{{ joke[3] }}"  type="submit" data-joke-id="{{ joke[3] }}">Show Comments</button>
                                     <h4>Comments: </h4>
-                                    {% for comment in joke_comments[joke['3']] %}
+                                    {% for comment in joke_comments[joke[3]] %}
                                         <div class="comment">
                                             <strong>{{ comment.username }}</strong> ({{ comment.rating }}/5):
                                             <em>{{ comment.comment }}</em>
                                         </div>
                                     {% endfor %}
-                                </div>
                             {% endif %}
+                            
                         {% endif %}
                          <!-- If you are admin you may delete jokes (connected by a js function in index.js) -->
                         {% if session.get('admin') %}
