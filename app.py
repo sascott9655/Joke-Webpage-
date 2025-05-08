@@ -19,15 +19,19 @@ def initdb():
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
     c.execute("PRAGMA foreign_keys = ON")  # Enable foreign key enforcement
+    # c.execute("DROP TABLE IF EXISTS jokes")
     #--------------jokes table----------------------------------------------------------
     c.execute('''
             CREATE TABLE IF NOT EXISTS jokes (  -- jokes table for users to insert jokes
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 content TEXT NOT NULL,
                 timestamp TEXT NOT NULL,
+                user_id INTEGER, --replacing this use instead of username
                 username TEXT,
                 rating REAL DEFAULT 0, 
-                approved INTEGER DEFAULT 0
+                approved INTEGER DEFAULT 0,
+                FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE 
+                --Setting up the table with ON DELETE CASCADE, then deleting the user will automatically delete all related data(which is what we want!) 
             )
             ''')
     #--------------users table----------------------------------------------------------
@@ -48,8 +52,8 @@ def initdb():
                 rating INTEGER,
                 comment TEXT,
                 UNIQUE(user_id, joke_id) --prevent multiple ratings per user per joke
-                FOREIGN KEY (user_id) REFERENCES users(id) -- checks to see if user_id exists in the users table and connects them 
-                FOREIGN KEY (joke_id) REFERENCES jokes(id) -- checks to see if joke_id exists in the jokes table and connects them 
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE -- checks to see if user_id exists in the users table and connects them 
+                FOREIGN KEY (joke_id) REFERENCES jokes(id) ON DELETE CASCADE-- checks to see if joke_id exists in the jokes table and connects them 
               )
               ''')
     conn.commit()
@@ -84,7 +88,7 @@ def index():
     conn = sqlite3.connect('jokes.db')
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    c.execute('SELECT content, rating, username, id FROM jokes WHERE approved=1 ORDER BY rating DESC')
+    c.execute('SELECT content, rating, username, user_id, id FROM jokes WHERE approved=1 ORDER BY rating DESC')
     jokes = c.fetchall()
     c.execute('''
             SELECT ratings.joke_id, ratings.comment, ratings.rating, users.username
@@ -150,18 +154,18 @@ def submit_joke():
         return redirect(url_for('login')) #cant submit a joke unless you are logged in
     if request.method == 'POST':
         joke = request.form['joke']
-        username = session['username']
+        user_id = session['user_id']
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         conn = sqlite3.connect('jokes.db')
         c = conn.cursor()
-        c.execute('INSERT into jokes (content, timestamp, username) VALUES (?, ?, ?)', (joke, timestamp, username))
+        c.execute('INSERT into jokes (content, timestamp, user_id) VALUES (?, ?, ?)', (joke, timestamp, user_id))
         conn.commit()
         conn.close()
         flash("Waiting for admin approval. Your joke should appear on the homepage if the joke is approved.")
         return redirect(url_for('index')) #if you are able to make a joke successfully then go to the homepage and wait for the admin to approve of it
     
-    return render_template("submit_joke.html", username=session['username'])
+    return render_template("submit_joke.html", user_id=session['user_id'])
 
 @app.route('/moderate')
 def moderate():
@@ -177,8 +181,28 @@ def moderate():
 
     return render_template('moderate.html', jokes=jokes)
 
-#These routes are dynamic routes in Flask. They extract the integer value joke_id from the URL and pass into the variable joke_id. 
+@app.route('/delete_account', methods=['GET','POST'])
+def delete_account():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    if request.method =='POST':
+        user_id = session['user_id']
+        conn = sqlite3.connect('jokes.db')
+        c = conn.cursor()
+        c.execute("PRAGMA foreign_keys=ON")
 
+        # Delete user — related jokes and ratings will be auto-deleted if ON DELETE CASCADE is set(which I believe it is!)
+        c.execute('DELETE FROM users WHERE id =?', (user_id,))
+
+        conn.commit()
+        conn.close()
+        session.clear()
+        flash('Your account has been deleted.', 'success')
+        return redirect(url_for('index'))
+
+    return render_template('delete_account.html')
+    
+#These routes are dynamic routes in Flask. They extract the integer value joke_id from the URL and pass into the variable joke_id. 
 @app.route('/approve/<int:joke_id>', methods=['POST'])
 def approve_joke(joke_id):
     if not session.get('admin'):
@@ -252,14 +276,6 @@ def rate_joke(joke_id):
               WHERE id=? --ensures you are updating only the joke you are rating and that it matches to the joke_id in the subquery
               ''', (joke_id, joke_id) # first joke_id is the subquery the second joke_id is the jokes table column jokes_id 
               ) 
-            #test before 
-    # c.execute('''
-    #         SELECT ratings.comment, ratings.rating, users.username
-    #         FROM ratings
-    #         JOIN users ON ratings.user_id = users.id
-    #         WHERE ratings, joke_id=?
-    #         '''(joke_id,)
-    #         )
     conn.commit()
     conn.close()
 

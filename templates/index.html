@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Jokes Webpage</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </head>
 <body>
     <header>
@@ -39,6 +39,7 @@
         <a href="/create_account">Create Account</a>
         <a href="/submit_joke">Submit Joke</a>
         <a href="/moderate">Moderate</a>
+        <a href="/delete_account">Delete Account</a>
         </div>
         <hr>
     </nav>
@@ -72,9 +73,10 @@
 
                                  <button type="submit">Submit</button>
                             </form>
-
+                            <!-- Ensures only jokes that actually have comments will render a Show Comments button -->
                             {% if joke[3] in joke_comments %}
-                                <button id ="comments-{{ joke[3] }}"  type="submit" data-joke-id="{{ joke[3] }}">Show Comments</button>
+                                <button class="toggle-comments"  type="button" data-joke-id="{{ joke[3] }}">Show Comments</button>
+                                    <div id="comments-{{ joke[3] }}">
                                     <h4>Comments: </h4>
                                     {% for comment in joke_comments[joke[3]] %}
                                         <div class="comment">
@@ -82,6 +84,7 @@
                                             <em>{{ comment.comment }}</em>
                                         </div>
                                     {% endfor %}
+                                    </div>
                             {% endif %}
                             
                         {% endif %}
