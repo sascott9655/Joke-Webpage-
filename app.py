@@ -19,7 +19,7 @@ def initdb():
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
     c.execute("PRAGMA foreign_keys = ON")  # Enable foreign key enforcement
-    # c.execute("DROP TABLE IF EXISTS jokes")
+    # c.execute("DROP TABLE IF EXISTS users")
     #--------------jokes table----------------------------------------------------------
     c.execute('''
             CREATE TABLE IF NOT EXISTS jokes (  -- jokes table for users to insert jokes
@@ -77,7 +77,7 @@ def register():
                 flash("Username already taken.")
                 return render_template('create_account.html') #if account creating fails render back to it to try again
             conn.close()
-            return redirect(url_for('login')) #login if successful
+            return redirect(url_for('index')) #login if successful
     
     return render_template('create_account.html') #default to the create account page 
 
@@ -98,7 +98,7 @@ def index():
     c.execute('''
             SELECT "ratings"."joke_id", "ratings"."comment", "ratings"."rating", "users"."username"
             FROM "ratings"
-            JOIN "users" ON "ratings"."user_id" = "users.id"
+            JOIN "users" ON "ratings"."user_id" = "users"."id"
             '''
             )
     comments = c.fetchall()
@@ -138,10 +138,10 @@ def login():
             session['user_id'] = user[0] #set user_id
             session['username'] = username # set username
             session['admin'] = (user[2] == 1) #check if they are admin
-            flash(f'Welcome back,{username}')
+            flash(f'Welcome, {username}')
             return redirect(url_for('index')) #redirect back to the home page when you login 
         else:
-            flash('Invalid username') 
+            flash('Invalid username and/or password') 
             return render_template("login.html") #go back to login page 
 
     return render_template("login.html") #go back to the login page as default

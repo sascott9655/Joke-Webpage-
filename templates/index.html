@@ -77,12 +77,14 @@
                             {% if joke[3] in joke_comments %}
                                 <button class="toggle-comments"  type="button" data-joke-id="{{ joke[3] }}">Show Comments</button>
                                     <div id="comments-{{ joke[3] }}">
+                                    <div class="comment-box">
                                     <h4>Comments: </h4>
                                     {% for comment in joke_comments[joke[3]] %}
                                         <div class="comment">
                                             <strong>{{ comment.username }}</strong> ({{ comment.rating }}/5):
                                             <em>{{ comment.comment }}</em>
                                         </div>
+                                    </div>
                                     {% endfor %}
                                     </div>
                             {% endif %}

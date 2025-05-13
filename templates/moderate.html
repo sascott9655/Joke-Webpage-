@@ -16,6 +16,7 @@
             <button onclick="rejectJoke('{{ joke[0] }}')">Reject</button>
         </div>
         {% endfor %}
+        <a href="{{ url_for('index')  }}">Home</a>
         <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 

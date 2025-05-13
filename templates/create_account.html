@@ -28,6 +28,13 @@
         <input type="password" name="password" required autocomplete="off"><br><br>
         <input type="submit" value="Create Account!">
        </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-message"> 
+                    <p>{{ messages[0] }}</p>
+                </div>
+            {% endif %}
+        {% endwith %} 
     <footer>
         <hr>
         <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
