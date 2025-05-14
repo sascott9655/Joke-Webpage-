@@ -287,7 +287,27 @@ def rate_joke(joke_id):
     flash("Your rating and comment have been submitted.")
     return redirect(url_for('index'))
 
-     
+@app.route('/joke/<int:joke_id>')
+def joke_detail(joke_id):
+    conn = sqlite3.connect('jokes.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM "jokes" WHERE "id" = ?', (joke_id,))
+    joke = c.fetchone()
+
+    if joke is None:
+        flash("Joke not found.")
+        return redirect(url_for('index'))
+        
+    c.execute('''
+            SELECT "comment", "users"."username" FROM "ratings"
+            JOIN "users" ON "ratings"."user_id" = "users"."id"
+            WHERE "joke_id" = ?
+            ''', (joke_id,))
+    comments = c.fetchall()
+
+    conn.close()
+
+    return render_template('joke_detail.html', joke=joke, comments=comments)     
 
 if __name__ == "__main__":
     initdb()

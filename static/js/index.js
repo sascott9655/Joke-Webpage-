@@ -29,8 +29,11 @@ document.addEventListener('DOMContentLoaded', function(){
         const jokeId = button.getAttribute('data-joke-id');
         const commentDivId = `comments-${jokeId}`;
 
+        // Set initial text
+        button.textContent = "Show Comments";
+
         button.addEventListener('click', function(){
-            toggleComments(commentDivId);
+            toggleComments(commentDivId, button);
         });
     })
 });

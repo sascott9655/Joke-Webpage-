@@ -44,7 +44,7 @@
         <hr>
     </nav>
     <p> Create an account in order to submit a joke. The joke needs to be approved through
-        the moderator, <em> <b> me Sam Scott </b> </em> ,before it is officially uploaded to the web. Feel
+        the moderator, <em> <b> me Sam Scott </b> </em>, before it is officially uploaded to the web. Feel
     welcomed to peruse the website and rate some jokes that you encounter! Thank you! </p>
     <hr>
     <main>
@@ -54,7 +54,8 @@
                 {% for joke in jokes %}
                     <div class="joke-space">
                         <strong>{{ joke[2] }}</strong>: {{ joke[0] }}<br>
-                        Rating: {{ joke[1] or 0 }} / 5
+                        Rating: {{ joke[1] or 0 }} / 5  <a href ="{{ url_for('joke_detail', joke_id=joke[3]) }}"> <button>View comments</button></a>
+                        <hr>
                         {% if session.get('user_id') %}
                         <!-- Connects to the rate_joke route so users can rate your jokes -->
                          <!-- Changing joke[3] to joke['id'] because of conn.row_factory = sqlite3.Row in our index Flask route -->
@@ -67,7 +68,6 @@
                                     <option value="{{ i }}">{{ i }}</option>
                                     {% endfor %}
                                  </select>
-
                                  <label for="comment">Comment:</label>
                                  <textarea name="comment" required></textarea>
 
@@ -75,7 +75,7 @@
                             </form>
                             <!-- Ensures only jokes that actually have comments will render a Show Comments button -->
                             {% if joke[3] in joke_comments %}
-                                <button class="toggle-comments"  type="button" data-joke-id="{{ joke[3] }}">Show Comments</button>
+                                <button class="toggle-comments"  type="button" data-joke-id="{{ joke[3] }}"></button>
                                     <div id="comments-{{ joke[3] }}">
                                     <div class="comment-box">
                                     <h4>Comments: </h4>
