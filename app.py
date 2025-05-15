@@ -19,7 +19,7 @@ def initdb():
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
     c.execute("PRAGMA foreign_keys = ON")  # Enable foreign key enforcement
-    # c.execute("DROP TABLE IF EXISTS users")
+    # c.execute("DROP TABLE IF EXISTS ratings")
     #--------------jokes table----------------------------------------------------------
     c.execute('''
             CREATE TABLE IF NOT EXISTS jokes (  -- jokes table for users to insert jokes
@@ -50,6 +50,7 @@ def initdb():
                 joke_id INTEGER,
                 rating INTEGER,
                 comment TEXT,
+                timestamp TEXT NOT NULL,
                 UNIQUE(user_id, joke_id) --prevent multiple ratings per user per joke
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE -- checks to see if user_id exists in the users table and connects them 
                 FOREIGN KEY (joke_id) REFERENCES jokes(id) ON DELETE CASCADE-- checks to see if joke_id exists in the jokes table and connects them 
@@ -95,30 +96,12 @@ def index():
                ORDER BY "jokes"."rating" DESC
             ''')
     jokes = c.fetchall()
-    c.execute('''
-            SELECT "ratings"."joke_id", "ratings"."comment", "ratings"."rating", "users"."username"
-            FROM "ratings"
-            JOIN "users" ON "ratings"."user_id" = "users"."id"
-            '''
-            )
-    comments = c.fetchall()
-
-    joke_comments = {}
-    for row in comments:
-        joke_id = row['joke_id']
-        if joke_id not in joke_comments:
-            joke_comments[joke_id] = []
-        joke_comments[joke_id].append({
-            'username': row['username'],
-            'rating': row['rating'],
-            'comment': row['comment']
-        })
 
 
     conn.close()
     # Sending the list of jokes and having joke_comments have each joke_id match up to its associated comment
     # Need username=session.get('username') to check if a user is logged in or out
-    return render_template('index.html', jokes=jokes, username=session.get('username'), joke_comments=joke_comments)
+    return render_template('index.html', jokes=jokes, username=session.get('username'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -255,6 +238,8 @@ def rate_joke(joke_id):
     rating = int(request.form['rating'])
     user_id = session['user_id']
     comment = request.form.get('comment', '').strip() #do I want comment to be able to be empty? Testing needed to confirm
+    # Format: Abbreviated weekday, month, 2-digit year
+    timestamp = datetime.now().strftime("%B %d, %Y")
 
     if not rating or not comment:
         flash("You must provide both a rating and a comment.")
@@ -263,13 +248,13 @@ def rate_joke(joke_id):
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
 
-    c.execute('''INSERT OR REPLACE INTO "ratings" ("user_id", "joke_id", "rating", "comment") --The INSERT OR REPLACE statement in SQLITE is used to add a new row or replace an existing row.
+    c.execute('''INSERT OR REPLACE INTO "ratings" ("user_id", "joke_id", "rating", "comment", "timestamp") --The INSERT OR REPLACE statement in SQLITE is used to add a new row or replace an existing row.
     -- This is useful because if you are a user you can rewrite a new review and have your new review overwrite the old one
-    VALUES (?,?,?,?)
+    VALUES (?,?,?,?,?)
     ON CONFLICT("user_id", "joke_id") --If there is already a record for this user and joke, a conflict will occur(b/c user_id and joke_id are primary keys)
-    DO UPDATE SET "rating" = excluded."rating", "comment" = excluded."comment" -- Update the existing rating adn comment with new values instead of throwing an error.
+    DO UPDATE SET "rating" = excluded."rating", "comment" = excluded."comment", "timestamp" = excluded."timestamp" -- Update the existing rating, timestamp and comment with new values instead of throwing an error.
     ''',
-    (user_id, joke_id, rating, comment)) 
+    (user_id, joke_id, rating, comment, timestamp)) 
 
     c.execute('''
               UPDATE "jokes" --modifying the jokes table
@@ -290,21 +275,44 @@ def rate_joke(joke_id):
 @app.route('/joke/<int:joke_id>')
 def joke_detail(joke_id):
     conn = sqlite3.connect('jokes.db')
+    conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    c.execute('SELECT * FROM "jokes" WHERE "id" = ?', (joke_id,))
-    joke = c.fetchone()
-
-    if joke is None:
+    # Joke info
+    c.execute('''
+            SELECT "jokes"."id", "jokes"."content", "jokes"."rating", "users"."username"
+            FROM "jokes"
+            JOIN "users" ON "jokes"."user_id" = "users"."id"
+            WHERE "jokes"."id" = ?
+            ''', (joke_id,))
+    row = c.fetchone()
+    
+    if row is None:
         flash("Joke not found.")
         return redirect(url_for('index'))
-        
-    c.execute('''
-            SELECT "comment", "users"."username" FROM "ratings"
-            JOIN "users" ON "ratings"."user_id" = "users"."id"
-            WHERE "joke_id" = ?
-            ''', (joke_id,))
-    comments = c.fetchall()
 
+    joke = {
+        'id': row[0],
+        'content': row[1],
+        'rating': row[2],
+        'username': row[3]
+    }
+    # Comments 
+    c.execute('''
+            SELECT "ratings"."comment", "users"."username", "ratings"."rating", "ratings"."timestamp"
+            FROM "ratings"
+            JOIN "users" ON "ratings"."user_id" = "users"."id"
+            WHERE "ratings"."joke_id" = ?
+            ORDER BY ratings.timestamp DESC
+            ''', (joke_id,))
+
+    comments = []
+    for row in c.fetchall():
+        comments.append({
+            'comment':row[0],
+            'username': row[1],
+            'rating': row[2],
+            'timestamp': row[3]
+        })
     conn.close()
 
     return render_template('joke_detail.html', joke=joke, comments=comments)     

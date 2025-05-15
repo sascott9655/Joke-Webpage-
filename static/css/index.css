@@ -36,7 +36,7 @@ button{
 .scroll-box{
 	height:400px;
 	width:400px;
-	border:1px solid #ccc;
+	border:1px solid #0a33e9;
 	font:16px/26px Georgia, Garamond, Serif;
 	overflow:auto;
 }

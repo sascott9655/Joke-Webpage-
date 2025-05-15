@@ -44,7 +44,7 @@
         <hr>
     </nav>
     <p> Create an account in order to submit a joke. The joke needs to be approved through
-        the moderator, <em> <b> me Sam Scott </b> </em>, before it is officially uploaded to the web. Feel
+        the moderator, <em> <b> me Sam Scott, </b> </em> before it is officially uploaded to the web. Feel
     welcomed to peruse the website and rate some jokes that you encounter! Thank you! </p>
     <hr>
     <main>
@@ -53,49 +53,17 @@
                 <!-- Display jokes in the scroll box -->
                 {% for joke in jokes %}
                     <div class="joke-space">
-                        <strong>{{ joke[2] }}</strong>: {{ joke[0] }}<br>
-                        Rating: {{ joke[1] or 0 }} / 5  <a href ="{{ url_for('joke_detail', joke_id=joke[3]) }}"> <button>View comments</button></a>
-                        <hr>
-                        {% if session.get('user_id') %}
-                        <!-- Connects to the rate_joke route so users can rate your jokes -->
-                         <!-- Changing joke[3] to joke['id'] because of conn.row_factory = sqlite3.Row in our index Flask route -->
-                            <form method="POST" action="{{ url_for('rate_joke', joke_id = joke[3]) }}">  
-                                <!-- label for I believe labels each of the jokes with the prompt rate this joke -->
-                                 <label for="rating">Rate this joke:</label>
-                                 <select name="rating" required>
-                                    <option value="">--</option>
-                                    {% for i in range(1, 6) %}
-                                    <option value="{{ i }}">{{ i }}</option>
-                                    {% endfor %}
-                                 </select>
-                                 <label for="comment">Comment:</label>
-                                 <textarea name="comment" required></textarea>
-
-                                 <button type="submit">Submit</button>
-                            </form>
-                            <!-- Ensures only jokes that actually have comments will render a Show Comments button -->
-                            {% if joke[3] in joke_comments %}
-                                <button class="toggle-comments"  type="button" data-joke-id="{{ joke[3] }}"></button>
-                                    <div id="comments-{{ joke[3] }}">
-                                    <div class="comment-box">
-                                    <h4>Comments: </h4>
-                                    {% for comment in joke_comments[joke[3]] %}
-                                        <div class="comment">
-                                            <strong>{{ comment.username }}</strong> ({{ comment.rating }}/5):
-                                            <em>{{ comment.comment }}</em>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                    </div>
-                            {% endif %}
-                            
-                        {% endif %}
-                         <!-- If you are admin you may delete jokes (connected by a js function in index.js) -->
-                        {% if session.get('admin') %}
-                         <form method="POST" action = "{{ url_for('delete_joke', joke_id=joke[3]) }}">
+                        <strong>{{ joke['username'] }}</strong>: {{ joke['content'] }}<br>
+                        Rating: {{ joke['rating'] or 0 }} / 5  <a href ="{{ url_for('joke_detail', joke_id=joke['user_id']) }}">
+                         <a href="{{ url_for('joke_detail', joke_id=joke.id) }}">
+                            <button type="button">View Comments</button>
+                         </a>
+                         {% if session.get('admin') %}
+                         <form method="POST" action="{{ url_for('delete_joke', joke_id=joke.id)}}">
                             <button class="delete-button" type="submit">Delete</button>
-                         </form>
-                        {% endif %}
+                            </form>
+                         {% endif %}
+                         <hr>
                     </div>
                 {% endfor %} 
                 <!-- End of the list of jokes -->
