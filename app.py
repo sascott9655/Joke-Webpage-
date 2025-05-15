@@ -6,14 +6,15 @@
 #---------------------------------------------------------------------------------------------------------------------------------------------
 from flask import Flask, request, render_template, redirect, url_for, flash, session
 import sqlite3
+import os 
+from dotenv import load_dotenv
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey' #temporary key
+load_dotenv()
+app.secret_key = os.getenv('SECRET_KEY')
 
-ADMIN_USERNAME = 'admin'
-ADMIN_PASSWORD = 'password123'
 
 def initdb():
     conn = sqlite3.connect('jokes.db')
