@@ -10,13 +10,29 @@
     <hr>
 
     <h2>Jokes by {{ username }}</h2>
-    
-    {% for joke in jokes %}
-        <div>
-            <p><strong>Joke:</strong> {{ joke.content }}</p>
-            <p><strong>Rating:</strong>{{ joke.rating }}</p>
-            <hr>
-        </div>
-    {% endfor %}
+    if{% jokes != None}
+        {% for joke in jokes %}
+            
+            <div>
+                <p><strong>Joke:</strong> {{ joke.content }}</p>
+                <p><strong>Rating:</strong> {{ joke.rating }}</p>
+                <hr>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Searched user has no jokes approved on the website</p>
+    {% endif %}
+
+    {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-message"> 
+                    <p>{{ messages[0] }}</p>
+                </div>
+            {% endif %}
+        {% endwith %} 
+
+    <footer>
+        <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
+    </footer>
 </body>
 </html>

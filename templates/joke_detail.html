@@ -20,10 +20,8 @@
     {% if comments %}
         {% for comment in comments %}
             <div class="comment">
-<pre>
-<strong>{{ comment.username }}</strong> {{ comment.rating }}/5                   <em> {{ comment.comment }} </em> 
-<small>{{ comment.timestamp }}</small><br>
-</pre>
+                <strong>{{ comment.username }}</strong> {{ comment.rating }}/5<em> {{ comment.comment }} </em> 
+                <small>{{ comment.timestamp }}</small><br>
             </div>
             <br>
             <hr>

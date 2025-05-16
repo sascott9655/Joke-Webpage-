@@ -159,10 +159,6 @@ def submit_joke():
 
 @app.route('/moderate')
 def moderate():
-    if not session.get('admin'):
-        flash("Access denied. Admin privileges required.") #Admin approval to moderate
-        return redirect(url_for('index'))
-    
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
     c.execute('SELECT "id", "content", "timestamp" FROM "jokes" WHERE "approved" = 0') 
@@ -356,7 +352,7 @@ def user_detail(user_id):
     conn.close()
 
     if not rows:
-        return f"No jokes found for user with ID {user_id}", 404
+        return "No jokes found for the searched user"
 
     jokes=[]
     for row in rows:

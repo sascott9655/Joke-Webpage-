@@ -17,7 +17,6 @@
         <div class="hyperlinks">
         <a href="/">Home</a>
         <a href="/login">Login</a>
-        <a href="/create_account">Create Account</a>
         </div>
         <hr>
     </nav>
@@ -26,7 +25,7 @@
         <input type="text" name="username" required autocomplete="off"><br><br>
         <label>Create Password:</label>
         <input type="password" name="password" required autocomplete="off"><br><br>
-        <input type="submit" value="Create Account!">
+        <button type="submit" value="Create Account!">Create Account!</button>
        </form>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -36,7 +35,6 @@
             {% endif %}
         {% endwith %} 
     <footer>
-        <hr>
         <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
     </footer>
 </body>

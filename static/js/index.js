@@ -11,3 +11,4 @@ document.addEventListener('DOMContentLoaded', function(){
         button.addEventListener('click', deleteJoke);
     });
 });
+

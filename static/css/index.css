@@ -3,7 +3,7 @@ body{
 	text-align: center;
 }
 h1 {
-	color: blue;
+	color: rgb(34, 109, 221);
    }
 p{
 	font-size: 18px;
@@ -12,7 +12,7 @@ p{
 	padding-bottom: 5px;
 	padding-left: 50px; */
 	padding: 5px 50px 5px 50px;
-	border: 3px double lightskyblue;
+	border: 3px double rgb(34, 109, 221);
 	border-radius: 15px;
 }
 main{
@@ -22,8 +22,17 @@ main{
 	flex-direction: column;
 }
 button{
+	color: rgb(13, 90, 13);
+	background-color: lightblue;
 	border-radius: 15px;
+	border-color: lightblue;
 	box-shadow: 3px 3px 5px grey;
+}
+.hyperlinks:hover{
+	color:blue;
+}
+nav{
+	word-spacing: 4px;
 }
 .flash-message{
 	background-color: purple;
@@ -36,7 +45,7 @@ button{
 .scroll-box{
 	height:400px;
 	width:400px;
-	border:1px solid #0a33e9;
+	border:1px solid rgb(34, 109, 221);
 	font:16px/26px Georgia, Garamond, Serif;
 	overflow:auto;
 }
@@ -53,4 +62,18 @@ button{
 	border: 1px solid red;
 	padding: 10px;
 	margin: 10px;
+}
+a{
+	color: rgb(34, 109, 221);
+	text-decoration: none;
+}
+a:visited {
+	color:rgb(13, 90, 13)
+}
+footer{
+	position: fixed;
+	left: 0;
+  	bottom: 0;
+	width: 100%;
+	text-align: center;
 }
