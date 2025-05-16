@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <h1>Find other jokes on the Web!</h1>
+    <form method="POST" action="{{ url_for('search') }}">
+         <input type="text" name="username" placeholder="Search a username to view their jokes" required autocomplete="off">
+         <button type="submit">Search</button>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-message"> 
+                <p>{{ messages[0] }}</p>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    
+</body>
+</html>

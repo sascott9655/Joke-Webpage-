@@ -95,6 +95,7 @@ def index():
                LEFT JOIN "users" ON "jokes"."user_id" = "users"."id"
                WHERE "jokes"."approved" = 1
                ORDER BY "jokes"."rating" DESC
+               LIMIT 10
             ''')
     jokes = c.fetchall()
 
@@ -180,7 +181,7 @@ def delete_account():
         c = conn.cursor()
         c.execute("PRAGMA foreign_keys=ON")
 
-        # Delete user — related jokes and ratings will be auto-deleted if ON DELETE CASCADE is set(which I believe it is!)
+        # Delete user — related jokes and ratings will be auto-deleted if ON DELETE CASCADE is set
         c.execute('DELETE FROM "users" WHERE "id" = ?', (user_id,))
 
         conn.commit()
@@ -190,6 +191,28 @@ def delete_account():
         return redirect(url_for('index'))
 
     return render_template('delete_account.html')
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    jokes = []
+    if request.method == 'POST':
+        username = request.form['username']
+        conn = sqlite3.connect('jokes.db')
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        c.execute('''
+            SELECT "id" FROM "users"
+            WHERE "username" =?''', (username,))
+        user = c.fetchone()
+        conn.close()
+
+        if user:
+            user_id = user['id']
+            return redirect(url_for('user_detail', user_id=user_id))
+        else:
+            flash('User not found')
+
+    return render_template('search.html')
     
 #These routes are dynamic routes in Flask. They extract the integer value joke_id from the URL and pass into the variable joke_id. 
 @app.route('/approve/<int:joke_id>', methods=['POST'])
@@ -273,7 +296,7 @@ def rate_joke(joke_id):
     flash("Your rating and comment have been submitted.")
     return redirect(url_for('index'))
 
-@app.route('/joke/<int:joke_id>')
+@app.route('/joke_detail/<int:joke_id>')
 def joke_detail(joke_id):
     conn = sqlite3.connect('jokes.db')
     conn.row_factory = sqlite3.Row
@@ -316,7 +339,37 @@ def joke_detail(joke_id):
         })
     conn.close()
 
-    return render_template('joke_detail.html', joke=joke, comments=comments)     
+    return render_template('joke_detail.html', joke=joke, comments=comments)  
+
+@app.route('/user_detail/<int:user_id>')
+def user_detail(user_id):
+    conn = sqlite3.connect('jokes.db')
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute('''
+            SELECT "jokes"."content", "jokes"."rating", "jokes"."user_id", "users"."username"
+            FROM "jokes"
+            JOIN "users" ON "jokes"."user_id" = "users"."id"
+            WHERE "jokes"."user_id" = ?
+            ''', (user_id,))
+    rows = c.fetchall()
+    conn.close()
+
+    if not rows:
+        return f"No jokes found for user with ID {user_id}", 404
+
+    jokes=[]
+    for row in rows:
+        jokes.append({
+        'content': row[0],
+        'rating': row[1],
+        'user_id': row[2],
+        'username': row[3]
+        })
+    
+    return render_template('user_detail.html', jokes=jokes, username=rows[0]['username'])
+
+        
 
 if __name__ == "__main__":
     initdb()

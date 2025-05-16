@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Details</title>
+</head>
+<body>
+    <a href="{{ url_for('index') }}">&larr; Back to all jokes</a>
+    <hr>
+
+    <h2>Jokes by {{ username }}</h2>
+    
+    {% for joke in jokes %}
+        <div>
+            <p><strong>Joke:</strong> {{ joke.content }}</p>
+            <p><strong>Rating:</strong>{{ joke.rating }}</p>
+            <hr>
+        </div>
+    {% endfor %}
+</body>
+</html>

@@ -38,6 +38,7 @@
         <a href="/login">Login</a>
         <a href="/create_account">Create Account</a>
         <a href="/submit_joke">Submit Joke</a>
+        <a href="/search">Search</a>
         <a href="/moderate">Moderate</a>
         <a href="/delete_account">Delete Account</a>
         </div>
@@ -53,13 +54,13 @@
                 <!-- Display jokes in the scroll box -->
                 {% for joke in jokes %}
                     <div class="joke-space">
-                        <strong>{{ joke['username'] }}</strong>: {{ joke['content'] }}<br>
-                        Rating: {{ joke['rating'] or 0 }} / 5  <a href ="{{ url_for('joke_detail', joke_id=joke['user_id']) }}">
+                        {{ loop.index }}. <a href="{{ url_for('user_detail', user_id=joke.user_id) }}"><strong>{{ joke['username'] }}</a></strong>: {{ joke['content'] }}<br>
+                        Rating: {{ joke['rating'] or 0 }} / 5 
                          <a href="{{ url_for('joke_detail', joke_id=joke.id) }}">
                             <button type="button">View Comments</button>
                          </a>
                          {% if session.get('admin') %}
-                         <form method="POST" action="{{ url_for('delete_joke', joke_id=joke.id)}}">
+                         <form method="POST" action="{{ url_for('delete_joke', joke_id=joke.id) }}">
                             <button class="delete-button" type="submit">Delete</button>
                             </form>
                          {% endif %}
