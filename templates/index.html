@@ -9,7 +9,7 @@
 <body>
     <header>
         <h1> Jokes Webpage </h1>
-        <h2>Under major construction!!!</h2>
+        <h2>Under construction!!</h2>
         <!-- Displays username on the homepage if they are logged in -->
         {% if username %}
             <p>Welcome {{ username }}!</p>
@@ -39,8 +39,10 @@
         <a href="/create_account">Create Account</a>
         <a href="/submit_joke">Submit Joke</a>
         <a href="/search">Search</a>
-        <a href="/moderate">Moderate</a>
         <a href="/delete_account">Delete Account</a>
+        {% if session.get('admin') %}
+        <a href="/moderate">Moderate</a>
+         {% endif %}
         </div>
         <hr>
     </nav>
