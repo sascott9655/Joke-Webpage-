@@ -342,28 +342,34 @@ def user_detail(user_id):
     conn = sqlite3.connect('jokes.db')
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
+    
     c.execute('''
-            SELECT "jokes"."content", "jokes"."rating", "jokes"."user_id", "users"."username"
-            FROM "jokes"
-            JOIN "users" ON "jokes"."user_id" = "users"."id"
-            WHERE "jokes"."user_id" = ?
-            ''', (user_id,))
+    SELECT username FROM users
+    WHERE id = ?''', (user_id,))
+    user = c.fetchone()
+
+    if not user:
+        conn.close()
+        return "User not found", 404
+
+    c.execute('''
+        SELECT content, rating, user_id
+        FROM jokes
+        WHERE user_id = ?
+        ''', (user_id,))
     rows = c.fetchall()
     conn.close()
 
-    if not rows:
-        return "No jokes found for the searched user"
-
-    jokes=[]
+    jokes = []
     for row in rows:
         jokes.append({
-        'content': row[0],
-        'rating': row[1],
-        'user_id': row[2],
-        'username': row[3]
+            'content': row['content'],
+            'rating': row['rating'],
+            'user_id': row['user_id'],
+            'username': user['username']
         })
-    
-    return render_template('user_detail.html', jokes=jokes, username=rows[0]['username'])
+
+    return render_template('user_detail.html', jokes=jokes,  username=user['username'])
 
         
 

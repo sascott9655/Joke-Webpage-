@@ -22,17 +22,22 @@ main{
 	flex-direction: column;
 }
 button{
+	display: inline-block;
 	color: rgb(13, 90, 13);
-	background-color: lightblue;
+	background-color: rgb(255, 244, 233);
 	border-radius: 15px;
-	border-color: lightblue;
+	border-color:  rgb(252, 230, 209);
 	box-shadow: 3px 3px 5px grey;
 }
-.hyperlinks:hover{
-	color:blue;
+button:hover{
+	background-color: rgb(253, 178, 108);
+	border-color:  rgb(253, 178, 108);
 }
 nav{
 	word-spacing: 4px;
+}
+.hyper-links:hover{
+	color:rgb(111, 12, 150);
 }
 .flash-message{
 	background-color: purple;
@@ -52,10 +57,6 @@ nav{
 .joke-space{
 	margin-bottom: 20px;
 }
-.delete-button{
-	border-radius: 15px;
-	box-shadow: 3px 3px 5px grey;
-}
 .comment-box{
 	width: 360px;
 	height: 200px;
@@ -65,10 +66,14 @@ nav{
 }
 a{
 	color: rgb(34, 109, 221);
-	text-decoration: none;
+	/* text-decoration gets rid of the underline */
+	text-decoration: none; 
 }
-a:visited {
-	color:rgb(13, 90, 13)
+a:visited{
+	color:rgb(13, 90, 13);
+}
+.user-links:hover{
+	color:rgb(111, 12, 150);
 }
 footer{
 	position: fixed;
@@ -76,4 +81,10 @@ footer{
   	bottom: 0;
 	width: 100%;
 	text-align: center;
+}
+#delete-button{
+	display: inline-block;
+}
+hr{
+	color:rgb(34, 109, 221);
 }

@@ -33,17 +33,15 @@
     {% endwith %} 
 
     <nav>
-        <div class="hyperlinks">
-        <a href="/">Home</a>
-        <a href="/login">Login</a>
-        <a href="/create_account">Create_Account</a>
-        <a href="/submit_joke">Submit_Joke</a>
-        <a href="/search">Search</a>
-        <a href="/delete_account">Delete_Account</a>
+        <a class="hyper-links" href="/">Home</a>
+        <a class="hyper-links" href="/login">Login</a>
+        <a class="hyper-links" href="/create_account">Create_Account</a>
+        <a class="hyper-links" href="/submit_joke">Submit_Joke</a>
+        <a class="hyper-links" href="/search">Search</a>
+        <a class="hyper-links" href="/delete_account">Delete_Account</a>
         {% if session.get('admin') %}
-        <a href="/moderate">Moderate</a>
+        <a class="hyper-links" href="/moderate">Moderate</a>
          {% endif %}
-        </div>
         <hr>
     </nav>
     <p> Create an account in order to submit a joke. The joke needs to be approved through
@@ -56,14 +54,14 @@
                 <!-- Display jokes in the scroll box -->
                 {% for joke in jokes %}
                     <div class="joke-space">
-                        {{ loop.index }}. <a href="{{ url_for('user_detail', user_id=joke.user_id) }}"><strong>{{ joke['username'] }}</a></strong>: {{ joke['content'] }}<br>
+                        {{ loop.index }}. <a class="user-links" href="{{ url_for('user_detail', user_id=joke.user_id) }}"><strong>{{ joke['username'] }}</a></strong>: {{ joke['content'] }}<br>
                         Rating: {{ joke['rating'] or 0 }} / 5 
                          <a href="{{ url_for('joke_detail', joke_id=joke.id) }}">
-                            <button type="button">View Comments</button>
+                            <button type="submit">View Comments</button>
                          </a>
                          {% if session.get('admin') %}
-                         <form method="POST" action="{{ url_for('delete_joke', joke_id=joke.id) }}">
-                            <button class="delete-button" type="submit">Delete</button>
+                         <form id="delete-button" method="POST" action="{{ url_for('delete_joke', joke_id=joke.id) }}">
+                            <button type="submit">Delete</button>
                             </form>
                          {% endif %}
                          <hr>

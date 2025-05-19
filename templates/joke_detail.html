@@ -4,22 +4,24 @@
     <meta charset="UTF-8">
     <title>Joke Details</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <script src="{{ url_for('static', filename='js/joke_detail.js') }}"></script>
 </head>
 <body>
     <a href="{{ url_for('index') }}">&larr; Back to all jokes</a>
-    <hr>
+        <hr>
 
-    <h2>Joke Details</h2>
-    <p><strong>Author:</strong> {{ joke.username }}</p>
-    <p><strong>Joke:</strong> {{ joke.content }}</p>
-    <p><strong>Rating:</strong> {{ joke.rating or 0 }}/5</p>
+        <h2>Joke Details</h2>
+        <p><strong>Author:</strong> {{ joke.username }}</p>
+        <p><strong>Joke:</strong> {{ joke.content }}</p>
+        <p><strong>Rating:</strong> {{ joke.rating or 0 }}/5</p>
+        <hr>
 
+    <button class="comment-section-button" type="submit">Show Comments ↓</button>
     <hr>
-    <h3>Comments</h3>
-    <hr>
+    <div class="comment-section-wrapper" style="display:None;">
     {% if comments %}
         {% for comment in comments %}
-            <div class="comment">
+            <div class="comment-section">
                 <strong>{{ comment.username }}</strong> {{ comment.rating }}/5<em> {{ comment.comment }} </em> 
                 <small>{{ comment.timestamp }}</small><br>
             </div>
@@ -29,6 +31,7 @@
     {% else %}
             <p>No comments yet!</p>
     {% endif %}
+    </div>
 
     {% if session.get('user_id') %}
             <form method ="POST" action="{{ url_for('rate_joke', joke_id = joke['id'])}}">

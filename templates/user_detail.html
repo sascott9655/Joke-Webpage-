@@ -6,11 +6,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 <body>
-    <a href="{{ url_for('index') }}">&larr; Back to all jokes</a>
+    <a href="{{ url_for('search') }}">&larr; Back to search</a>
     <hr>
 
     <h2>Jokes by {{ username }}</h2>
-    if{% jokes != None}
+    
         {% for joke in jokes %}
             
             <div>
@@ -19,9 +19,6 @@
                 <hr>
             </div>
         {% endfor %}
-    {% else %}
-        <p>Searched user has no jokes approved on the website</p>
-    {% endif %}
 
     {% with messages = get_flashed_messages() %}
             {% if messages %}
