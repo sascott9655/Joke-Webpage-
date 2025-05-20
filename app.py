@@ -190,26 +190,9 @@ def delete_account():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    jokes = []
-    if request.method == 'POST':
-        username = request.form['username']
-        conn = sqlite3.connect('jokes.db')
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
-        c.execute('''
-            SELECT "id" FROM "users"
-            WHERE "username" =?''', (username,))
-        user = c.fetchone()
-        conn.close()
+    return    
 
-        if user:
-            user_id = user['id']
-            return redirect(url_for('user_detail', user_id=user_id))
-        else:
-            flash('User not found')
 
-    return render_template('search.html')
-    
 #These routes are dynamic routes in Flask. They extract the integer value joke_id from the URL and pass into the variable joke_id. 
 @app.route('/approve/<int:joke_id>', methods=['POST'])
 def approve_joke(joke_id):
@@ -292,6 +275,7 @@ def rate_joke(joke_id):
     flash("Your rating and comment have been submitted.")
     return redirect(url_for('index'))
 
+# This route is just for the jokes that make it on the homepage 
 @app.route('/joke_detail/<int:joke_id>')
 def joke_detail(joke_id):
     conn = sqlite3.connect('jokes.db')
@@ -342,34 +326,53 @@ def user_detail(user_id):
     conn = sqlite3.connect('jokes.db')
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    
+    # Jokes
     c.execute('''
-    SELECT username FROM users
-    WHERE id = ?''', (user_id,))
-    user = c.fetchone()
-
-    if not user:
-        conn.close()
-        return "User not found", 404
-
-    c.execute('''
-        SELECT content, rating, user_id
-        FROM jokes
-        WHERE user_id = ?
-        ''', (user_id,))
-    rows = c.fetchall()
-    conn.close()
+            SELECT "jokes"."id", "jokes"."content", "jokes"."rating", "users"."username"
+            FROM "jokes"
+            JOIN "users" ON "jokes"."user_id" = "users"."id"
+            WHERE "users"."id" = ?
+            ''', (user_id,))
 
     jokes = []
-    for row in rows:
+    joke_ids = []
+    for row in c.fetchall():
         jokes.append({
+            'id': row['id'],
             'content': row['content'],
             'rating': row['rating'],
-            'user_id': row['user_id'],
-            'username': user['username']
+            'username': row['username']
         })
+        joke_ids.append(row['id'])
 
-    return render_template('user_detail.html', jokes=jokes,  username=user['username'])
+    if not jokes:
+        flash("User has no jokes uploaded.")
+        return redirect(url_for('index'))
+
+    # Fetch all comments *on this user's jokes*
+    comments = []
+    if joke_ids:
+        placeholders = ','.join('?' for _ in joke_ids)
+        c.execute(f'''
+                SELECT "ratings"."comment", "users"."username", "ratings"."rating", "ratings"."timestamp", "ratings"."joke_id"
+                FROM "ratings"
+                JOIN "users" ON "ratings"."user_id" = "users"."id"
+                WHERE "ratings"."joke_id" IN ({placeholders})
+                ORDER BY "ratings"."timestamp" DESC
+                ''', joke_ids)
+
+        for row in c.fetchall():
+            comments.append({
+                'comment': row['comment'],
+                'username': row['username'],
+                'rating': row['rating'],
+                'timestamp': row['timestamp'],
+                'joke_id': row['joke_id']
+            })
+
+    conn.close()
+
+    return render_template('user_detail.html', jokes=jokes, comments=comments)
 
         
 

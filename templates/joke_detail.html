@@ -13,7 +13,19 @@
         <h2>Joke Details</h2>
         <p><strong>Author:</strong> {{ joke.username }}</p>
         <p><strong>Joke:</strong> {{ joke.content }}</p>
-        <p><strong>Rating:</strong> {{ joke.rating or 0 }}/5</p>
+        <p><strong>Rating:</strong>
+                         {% set full_stars = joke['rating'] | int %}
+                         {% set half_stars = 1 if joke['rating'] - full_stars >= 0.5 else 0 %}
+                         {% set empty_stars = 5 - full_stars - half_stars %}
+                         {% for i in range(full_stars) %}
+                            <span style="color:goldenrod";>★</span>   
+                         {% endfor %}
+                         {% if half_stars %}
+                            <span style="color:goldenrod";>⯨</span>
+                         {% endif %}
+                         {% for i in range(empty_stars) %}
+                            <span style="color:goldenrod";>☆</span> 
+                         {% endfor %}
         <hr>
 
     <button class="comment-section-button" type="submit">Show Comments ↓</button>

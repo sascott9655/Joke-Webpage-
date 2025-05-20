@@ -1,6 +1,9 @@
 function toggleComments(){
-   const commentSection = document.querySelector('.comment-section-wrapper');
-   const button = document.querySelector('.comment-section-button')
+   const button = event.currentTarget;
+   const jokeContainer = button.closest('.joke');
+   const commentSection = jokeContainer.querySelector('.comment-section-wrapper');
+//    const button = document.querySelector('.comment-section-button')
+   
    if(commentSection.style.display === 'none' || commentSection.style.display === ''){
        commentSection.style.display = 'block'; 
        button.textContent = "Hide Comments ↑";
@@ -11,6 +14,8 @@ function toggleComments(){
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const button = document.querySelector('.comment-section-button');
-    button.addEventListener('click', toggleComments);
+    const button = document.querySelectorAll('.comment-section-button');
+    button.forEach(function (button){
+        button.addEventListener('click', toggleComments);
+    });
 })

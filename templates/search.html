@@ -7,21 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 <body>
-    <h1>Find other jokes on the Web!</h1>
-    <form method="POST" action="{{ url_for('search') }}">
-         <input type="text" name="username" placeholder="Search a username to view their jokes" required autocomplete="off">
-         <button type="submit">Search</button>
-    </form>
-    <br>
-    <a href="{{ url_for('index') }}">&larr; Back to all jokes</a>
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="flash-message"> 
-                <p>{{ messages[0] }}</p>
-            </div>
-        {% endif %}
-    {% endwith %}
+    
 
     <footer>
         <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>

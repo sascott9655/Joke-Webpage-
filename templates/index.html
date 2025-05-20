@@ -9,7 +9,7 @@
 <body>
     <header>
         <h1> Jokes Webpage </h1>
-        <h2>Under construction!!</h2>
+        <h2>Under Major construction!!</h2>
         <!-- Displays username on the homepage if they are logged in -->
         {% if username %}
             <p>Welcome {{ username }}!</p>
@@ -59,14 +59,10 @@
                          Rating:
                          {% set full_stars = joke['rating'] | int %}
                          {% set half_stars = 1 if joke['rating'] - full_stars >= 0.5 else 0 %}
-                         {% set frac_stars = 1 if joke['rating'] - full_stars <= 0.4 and joke['rating'] - full_stars >= 0.1 else 0 %}
-                         {% set empty_stars = 5 - full_stars - half_stars - frac_stars %}
+                         {% set empty_stars = 5 - full_stars - half_stars %}
                          {% for i in range(full_stars) %}
                             <span style="color:goldenrod";>★</span>   
                          {% endfor %}
-                         {% if frac_stars %}
-                            <span style="color:goldenrod";></span>
-                         {% endif %}
                          {% if half_stars %}
                             <span style="color:goldenrod";>⯨</span>
                          {% endif %}
