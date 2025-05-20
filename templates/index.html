@@ -55,7 +55,25 @@
                 {% for joke in jokes %}
                     <div class="joke-space">
                         {{ loop.index }}. <a class="user-links" href="{{ url_for('user_detail', user_id=joke.user_id) }}"><strong>{{ joke['username'] }}</a></strong>: {{ joke['content'] }}<br>
-                        Rating: {{ joke['rating'] or 0 }} / 5 
+    
+                         Rating:
+                         {% set full_stars = joke['rating'] | int %}
+                         {% set half_stars = 1 if joke['rating'] - full_stars >= 0.5 else 0 %}
+                         {% set frac_stars = 1 if joke['rating'] - full_stars <= 0.4 and joke['rating'] - full_stars >= 0.1 else 0 %}
+                         {% set empty_stars = 5 - full_stars - half_stars - frac_stars %}
+                         {% for i in range(full_stars) %}
+                            <span style="color:goldenrod";>★</span>   
+                         {% endfor %}
+                         {% if frac_stars %}
+                            <span style="color:goldenrod";></span>
+                         {% endif %}
+                         {% if half_stars %}
+                            <span style="color:goldenrod";>⯨</span>
+                         {% endif %}
+                         {% for i in range(empty_stars) %}
+                            <span style="color:goldenrod";>☆</span> 
+                         {% endfor %}
+
                          <a href="{{ url_for('joke_detail', joke_id=joke.id) }}">
                             <button type="submit">View Comments</button>
                          </a>
