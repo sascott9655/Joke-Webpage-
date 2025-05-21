@@ -8,9 +8,7 @@
 <body>
     <header>
         <h1> Create Account </h1>
-        <div class="subtitle">
         <p>Create an account to upload jokes and comment on other people's jokes</p>
-        </div>
         <hr>
     </header>
     <nav>
@@ -20,24 +18,27 @@
         </div>
         <hr>
     </nav>
-    <div class="aligning-content">
-       <form method="POST">
-        <label>Create Username:</label>
-        <input type="text" name="username" required autocomplete="off"><br><br>
-        <label>Create Password:</label>
-        <input type="password" name="password" required autocomplete="off"><br><br>
-        <button type="submit" value="Create Account!">Create Account!</button>
-       </form>
-    </div>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="flash-message"> 
-                    <p>{{ messages[0] }}</p>
-                </div>
-            {% endif %}
-        {% endwith %} 
+            <div class="aligning-content">
+                <form method="POST">
+                <label>Create Username:
+                <input type="text" name="username" required autocomplete="off"><br><br>
+                </label>
+                <label>Create Password:
+                <input id="mrgn-lft" type="password" name="password" required autocomplete="off"><br><br>
+                </label>
+                <button type="submit" value="Create Account!">Create Account!</button>
+                </form>
+            </div>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="flash-message"> 
+                            <p>{{ messages[0] }}</p>
+                        </div>
+                    {% endif %}
+                {% endwith %} 
     <footer>
         <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
     </footer>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
 </html>

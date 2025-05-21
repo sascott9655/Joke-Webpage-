@@ -103,3 +103,7 @@ hr{
 #mrgn-lft{
 	margin-left: 3px;
 }
+.moderator-box{
+	display: flex;
+	border:2px solid rgb(34, 109, 221);	
+}

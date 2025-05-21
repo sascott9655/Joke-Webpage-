@@ -4,23 +4,24 @@
     <meta charset="utf-8">
     <title> Moderator Panel </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    <script src="{{ url_for('static', filename='js/moderate.js') }}"></script>
 </head>
 <body>
     <h1>Moderator Panel</h1>
+    <a href="{{ url_for('index')  }}">Home</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
     {% for joke in jokes %}
-        <div class="joke-box" id="joke-{{ joke[0] }}">
-            <p>{{ joke[1] }}</p>
-            <small>Submitted: {{ joke[2] }}</small>
-            <button onclick="approveJoke('{{ joke[0] }}')">Approve</button>
-            <button onclick="rejectJoke('{{ joke[0] }}')">Reject</button>
+        <p>Joke: {{ joke['content'] }}</p>
+        <p>User: {{ joke['username'] }}</p>
+        <div class="aligning-content" id="joke-{{ joke['id'] }}">
+            <small>Submitted: {{ joke['timestamp'] }}</small>
+            <button onclick="approveJoke('{{ joke[id] }}')">Approve</button>
+            <button onclick="rejectJoke('{{ joke[id] }}')">Reject</button>
         </div>
         {% endfor %}
-        <a href="{{ url_for('index')  }}">Home</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
 
     <footer>
         <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
     </footer>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
 </html>

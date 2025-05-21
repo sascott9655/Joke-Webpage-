@@ -160,8 +160,14 @@ def submit_joke():
 @app.route('/moderate')
 def moderate():
     conn = sqlite3.connect('jokes.db')
+    conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    c.execute('SELECT "id", "content", "timestamp" FROM "jokes" WHERE "approved" = 0') 
+    c.execute('''
+                SELECT "jokes"."id", "jokes"."content", "jokes"."timestamp", "users".username 
+                FROM "jokes"
+                JOIN "users" ON "jokes"."user_id" = "users"."id"
+                WHERE "approved" = 0
+     ''') 
     jokes = c.fetchall() #find all unapproved jokes to moderate
     conn.close()
 
