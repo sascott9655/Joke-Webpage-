@@ -92,3 +92,14 @@ hr{
 #username{
 	color:rgb(34, 109, 221);
 }
+.aligning-content{
+	display: flex; /* put contents in a flex box */
+	flex-direction: row; /* puts it all in one row */
+	justify-content: center; /* puts the contents in the center of the page */
+	align-items: center; /* aligns the items in the flex box so the text area and buttons arent wide */
+	padding-top: 10px; /* gives padding above the box */
+	gap: 10px; /* gap spaces between each of the elements(used for parent classes) */
+}
+#mrgn-lft{
+	margin-left: 3px;
+}

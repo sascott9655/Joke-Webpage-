@@ -190,7 +190,27 @@ def delete_account():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
-    return    
+    if request.method == 'POST':
+        conn = sqlite3.connect('jokes.db')
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        username = request.form.get('username')
+
+        c.execute('''
+                SELECT "id" FROM users
+                WHERE "username" = ?
+                ''',(username,))
+        row = c.fetchone()
+        conn.close()
+
+        if row:
+            user_id = row['id']
+            return redirect(url_for('user_detail', user_id=user_id))
+        else:
+            flash('User not found')
+            return redirect(url_for('search'))
+
+    return render_template('search.html') 
 
 
 #These routes are dynamic routes in Flask. They extract the integer value joke_id from the URL and pass into the variable joke_id. 
@@ -347,7 +367,7 @@ def user_detail(user_id):
 
     if not jokes:
         flash("User has no jokes uploaded.")
-        return redirect(url_for('index'))
+        return redirect(url_for('search'))
 
     # Fetch all comments *on this user's jokes*
     comments = []
