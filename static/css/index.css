@@ -15,12 +15,35 @@ p{
 	padding: 5px 5px 5px 5px;
 	border: 3px double rgb(34, 109, 221);
 	border-radius: 15px;
+	text-wrap: balance;
+}
+.instructions{
+	max-width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 120px;
+	p{
+		max-width: 600px;
+	}
 }
 main{
 	display: flex;
 	justify-content: center;	
-	align-items: center;
-	flex-direction: column;
+	/* align-items: center; */
+	/* flex-direction: column; */
+}
+.scroll-box{
+	position: fixed;
+	height:600px;
+	width:800px;
+	border:1px solid rgb(34, 109, 221);
+	font:16px/26px Georgia, Garamond, Serif;
+	overflow:auto;
+}
+.joke-space{
+	margin-top: 20px;
+	/* margin-bottom: 20px; */
 }
 button{
 	display: inline-block;
@@ -34,6 +57,12 @@ button:hover{
 	background-color: rgb(253, 178, 108);
 	border-color:  rgb(253, 178, 108);
 	color:black;
+}
+#danger-button{
+	height: 50px;
+	border-color: rgb(180, 23, 23);
+	background-color: rgb(206, 4, 4);
+	color: white;
 }
 nav{
 	word-spacing: 4px;
@@ -63,17 +92,6 @@ nav{
 	color: white;
 	background-color: darkblue;
 	border-color: darkblue;
-}
-
-.scroll-box{
-	height:400px;
-	width:400px;
-	border:1px solid rgb(34, 109, 221);
-	font:16px/26px Georgia, Garamond, Serif;
-	overflow:auto;
-}
-.joke-space{
-	margin-bottom: 20px;
 }
 .comment-box{
 	width: 360px;

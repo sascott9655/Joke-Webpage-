@@ -22,7 +22,6 @@
             </div>
         </div>
             <p>Upload your best joke and get it rated!</p>
-        <hr>
     </header>
     <!-- This shows all the flash messages that show on the homepage -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -45,12 +44,12 @@
         {% if session.get('admin') %}
         <a class="hyper-links" href="/moderate">Moderate</a>
          {% endif %}
-        <hr>
     </nav>
+    <div class="instructions">
     <p> Create an account in order to submit a joke. The joke needs to be approved through
         the moderator, <em> <b> me Sam Scott, </b> </em> before it is officially uploaded to the web. Feel
     welcomed to peruse the website and rate some jokes that you encounter! Thank you! </p>
-    <hr>
+    </div>
     <main>
         <!-- Scroll Box -->
             <div class="scroll-box">

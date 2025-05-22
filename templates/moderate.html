@@ -14,8 +14,8 @@
         <p>User: {{ joke['username'] }}</p>
         <div class="aligning-content" id="joke-{{ joke['id'] }}">
             <small>Submitted: {{ joke['timestamp'] }}</small>
-            <button onclick="approveJoke('{{ joke[id] }}')">Approve</button>
-            <button onclick="rejectJoke('{{ joke[id] }}')">Reject</button>
+            <button onclick="approveJoke('{{ joke[0] }}')">Approve</button>
+            <button onclick="rejectJoke('{{ joke[0] }}')">Reject</button>
         </div>
         {% endfor %}
 
