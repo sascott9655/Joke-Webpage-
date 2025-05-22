@@ -74,9 +74,9 @@ def register():
             try:
                 c.execute('INSERT INTO "users" ("username", "password") VALUES (?, ?)', (username, hashed_password))
                 conn.commit()
-                flash('Account created succesfully!')
+                flash('Account created succesfully!', 'success')
             except sqlite3.IntegrityError:
-                flash("Username already taken.")
+                flash("Username already taken.", 'error')
                 return render_template('create_account.html') #if account creating fails render back to it to try again
             conn.close()
             return redirect(url_for('index')) #login if successful
@@ -98,7 +98,6 @@ def index():
                LIMIT 10
             ''')
     jokes = c.fetchall()
-
 
     conn.close()
     # Sending the list of jokes and having joke_comments have each joke_id match up to its associated comment
@@ -123,10 +122,10 @@ def login():
             session['user_id'] = user[0] #set user_id
             session['username'] = username # set username
             session['admin'] = (user[2] == 1) #check if they are admin
-            flash(f'Welcome, {username}')
+            # flash(f'Welcome, {username}', 'success')
             return redirect(url_for('index')) #redirect back to the home page when you login 
         else:
-            flash('Invalid username and/or password') 
+            flash('Invalid username and/or password', 'error') 
             return render_template("login.html") #go back to login page 
 
     return render_template("login.html") #go back to the login page as default
@@ -135,7 +134,7 @@ def login():
 def logout():
     username = session.get('username', '') #empty string if username doesnt exist
     session.clear() # Clears all session data (logs out user/admin)
-    flash(f"You have been logged out, {username}")
+    flash(f"You have been logged out, {username}", 'sad')
     return redirect(url_for('index')) #Takes you to the homepage
 
 @app.route('/submit_joke', methods=['GET', 'POST'])
@@ -152,7 +151,7 @@ def submit_joke():
         c.execute('INSERT into "jokes" ("content", "timestamp", "user_id") VALUES (?, ?, ?)', (joke, timestamp, user_id))
         conn.commit()
         conn.close()
-        flash("Waiting for admin approval. Your joke should appear on the homepage if the joke is approved.")
+        flash("Waiting for admin approval. Your joke should appear on the homepage if the joke is approved.", 'success')
         return redirect(url_for('index')) #if you are able to make a joke successfully then go to the homepage and wait for the admin to approve of it
     
     return render_template("submit_joke.html", user_id=session['user_id'])
@@ -189,7 +188,7 @@ def delete_account():
         conn.commit()
         conn.close()
         session.clear()
-        flash('Your account has been deleted.', 'success')
+        flash('Your account has been deleted.', 'sad')
         return redirect(url_for('index'))
 
     return render_template('delete_account.html')
@@ -213,7 +212,7 @@ def search():
             user_id = row['id']
             return redirect(url_for('user_detail', user_id=user_id))
         else:
-            flash('User not found')
+            flash('User not found', 'sad')
             return redirect(url_for('search'))
 
     return render_template('search.html') 
@@ -240,13 +239,13 @@ def reject_joke(joke_id):
     c.execute('DELETE FROM "jokes" WHERE "id" = ?', (joke_id,)) #delete the joke from the database
     conn.commit()
     conn.close()
-    flash('Joke rejected')
+    flash('Joke rejected', 'error')
     return '', 204
 
 @app.route('/delete_joke/<int:joke_id>', methods=['POST']) #This route is different from the reject route. It allows admins to delete jokes from the homepage(probably a temporary feature)
 def delete_joke(joke_id):
     if not session.get('admin'):
-        flash("Unauthorized: Only admins can delete jokes.")
+        flash("Unauthorized: Only admins can delete jokes.", 'error')
         return redirect(url_for('index'))
     
     conn = sqlite3.connect('jokes.db')
@@ -254,14 +253,13 @@ def delete_joke(joke_id):
     c.execute('DELETE FROM "jokes" WHERE "id" = ?', (joke_id,)) 
     conn.commit()
     conn.close()
-
-    flash("Joke deleted.")
+    flash("Joke deleted." 'success')
     return redirect(url_for('index'))
 
 @app.route('/rate_joke/<int:joke_id>', methods=['POST']) 
 def rate_joke(joke_id):
     if 'user_id' not in session: #checks if the user_id is in the session dictionary and user_id is a key, and keys in Python dictionary are strings.
-        flash("You must be logged in to rate jokes.")
+        flash("You must be logged in to rate jokes.", 'error')
         return redirect(url_for('login'))
     
     rating = int(request.form['rating'])
@@ -271,7 +269,7 @@ def rate_joke(joke_id):
     timestamp = datetime.now().strftime("%B %d, %Y")
 
     if not rating or not comment:
-        flash("You must provide both a rating and a comment.")
+        flash("You must provide both a rating and a comment.", 'error')
         return redirect(url_for('index'))
 
     conn = sqlite3.connect('jokes.db')
@@ -298,7 +296,7 @@ def rate_joke(joke_id):
     conn.commit()
     conn.close()
 
-    flash("Your rating and comment have been submitted.")
+    flash("Your rating and comment have been submitted.", 'success')
     return redirect(url_for('index'))
 
 # This route is just for the jokes that make it on the homepage 
@@ -317,7 +315,7 @@ def joke_detail(joke_id):
     row = c.fetchone()
     
     if row is None:
-        flash("Joke not found.")
+        flash("Joke not found.", 'error')
         return redirect(url_for('index'))
 
     joke = {
@@ -372,7 +370,7 @@ def user_detail(user_id):
         joke_ids.append(row['id'])
 
     if not jokes:
-        flash("User has no jokes uploaded.")
+        flash("User has no jokes uploaded." , 'sad')
         return redirect(url_for('search'))
 
     # Fetch all comments *on this user's jokes*

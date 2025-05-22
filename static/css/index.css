@@ -4,6 +4,7 @@ body{
 }
 h1 {
 	color: rgb(34, 109, 221);
+	text-align: center;
    }
 p{
 	font-size: 18px;
@@ -11,7 +12,7 @@ p{
 	padding-right: 50px;
 	padding-bottom: 5px;
 	padding-left: 50px; */
-	padding: 5px 50px 5px 50px;
+	padding: 5px 5px 5px 5px;
 	border: 3px double rgb(34, 109, 221);
 	border-radius: 15px;
 }
@@ -41,13 +42,29 @@ nav{
 	color:rgb(111, 12, 150);
 }
 .flash-message{
-	background-color: purple;
-	color: white;
+	/* background-color: purple; */
+	/* color: white;
 	border: 2px, solid, black;
 	padding: 10px;
 	margin: 15px;
-	border-radius: 5px;
+	border-radius: 5px; */
 }
+.error{
+	color: white;
+	background-color: darkred;
+	border-color: maroon;
+}
+.success{
+	color: white;
+	background-color: green;
+	border-color: green;
+}
+.sad{
+	color: white;
+	background-color: darkblue;
+	border-color: darkblue;
+}
+
 .scroll-box{
 	height:400px;
 	width:400px;
@@ -99,6 +116,30 @@ hr{
 	align-items: center; /* aligns the items in the flex box so the text area and buttons arent wide */
 	padding-top: 10px; /* gives padding above the box */
 	gap: 10px; /* gap spaces between each of the elements(used for parent classes) */
+}
+/* Title page */
+.header-container{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding:10px 20px;
+	position: relative;
+}
+
+.title{
+	margin: 0 auto; /* Used to center the header h1 in this case */
+	position: absolute; /* allows elements to be positioned based on an absolute point on the page, relative to its parent element. This ensures the element's position is the same even if the page is resized or the content is changed. */
+	left: 50%; /* moves the left edge of an element to the center of its containing block. It's often used in conjunction with transform: translateX(-50%) to horizontally center an element within its container. */
+	transform: translateX(-50%);
+}
+.user-actions{
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.success2{
+	color: green;
+	margin: 0;
 }
 #mrgn-lft{
 	margin-left: 3px;

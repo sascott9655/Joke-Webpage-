@@ -7,27 +7,31 @@
 </head>
 <body>
     <header>
-        <h1> Jokes Webpage </h1>
-        <h2>Under Major construction!!</h2>
+        <div class="header-container">
+            <div class="spacer"></div>
+        <h1 class="title"> Jokes Webpage </h1>
         <!-- Displays username on the homepage if they are logged in -->
-        {% if username %}
-            <p>Welcome {{ username }}!</p>
-            <!-- Logout button to log out user -->
-            <form action="{{ url_for('logout') }}" method="GET">
-                <button type="submit">Logout</button> 
-            </form>
-        {% endif %}
-        <div class="subtitle">
-            <p>Upload your best joke and get it rated!</p>
+            <div class="user-actions">
+                {% if username %}
+                    <h3 class="success2"><strong>Welcome {{ username }}!</strong></h3>
+                    <!-- Logout button to log out user -->
+                    <form action="{{ url_for('logout') }}" method="GET">
+                        <button type="submit">Logout</button> 
+                    </form>
+                {% endif %}
+            </div>
         </div>
+            <p>Upload your best joke and get it rated!</p>
         <hr>
     </header>
     <!-- This shows all the flash messages that show on the homepage -->
-    {% with messages = get_flashed_messages() %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <div class="flash-message"> 
-                <p>{{ messages[0] }}</p>
-            </div>
+            <ul class=flashes> 
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
         {% endif %}
     {% endwith %} 
 

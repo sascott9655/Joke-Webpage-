@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', function(){
     });     
 });
 
+
+
+
 // Admin approving jokes to exist on the website 
 function approveJoke(jokeId) {
     fetch(`/approve/${jokeId}`, {method: 'POST'})
@@ -26,6 +29,9 @@ function rejectJoke(jokeId) {
             document.getElementById(`joke-${jokeId}`).remove();
         }); 
 }
+
+
+
 
 // Comments button toggling when we view jokes and user accounts
 function toggleComments(){
@@ -49,3 +55,14 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', toggleComments);
     });
 })
+
+
+
+
+// sets a timer of displaying flash-messages
+// setTimeout(() => {
+//     const flashContainer = document.querySelector('.flash-message');
+//     if(flashContainer) {
+//         flashContainer.style.display = 'none';
+//     }
+// }, 5000);
