@@ -56,7 +56,7 @@
                     {% if joke.approved == 1 %}
                         <p class="success">Your joke "{{ joke.content }}" was approved</p>
                     {% elif joke.approved == -1 %}
-                        <p class="sad"> Your joke "{{ joke.content}}" was rejected</p>
+                        <p class="error"> Your joke "{{ joke.content}}" was rejected</p>
                     {% endif %}
                 {% endfor %}
             </div>
