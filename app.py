@@ -30,6 +30,7 @@ def initdb():
                 user_id INTEGER, --replacing this use instead of username
                 rating REAL DEFAULT 0, 
                 approved INTEGER DEFAULT 0,
+                notified INTEGER DEFAULT 0,
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE 
                 --Setting up the table with ON DELETE CASCADE, then deleting the user will automatically delete all related data(which is what we want!) 
             )
@@ -86,9 +87,39 @@ def register():
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
+    # Connect to the database
     conn = sqlite3.connect('jokes.db')
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
+
+    # Displays notification to the user if their joke is approved or not
+    user_id = session.get('user_id')
+    c.execute('''
+            SELECT "id", "content", "approved"
+            FROM "jokes"
+            WHERE "user_id" = ? AND approved != 0 and notified = 0
+            ''', (user_id,))
+    notifications = c.fetchall()
+
+    joke_ids = [joke['id'] for joke in notifications]
+
+    if joke_ids:
+        placeholders = ','.join('?' for _ in joke_ids)
+        c.execute(f'''
+                UPDATE "jokes" 
+                SET "notified" = 1
+                WHERE "id" IN ({placeholders})''', joke_ids)
+            
+        rejected_ids = [joke['id'] for joke in notifications if joke['approved'] == -1]
+        if rejected_ids:
+            rejected_placeholders = ','.join('?' for _ in rejected_ids)
+            c.execute(f'''
+                    DELETE FROM "jokes"
+                    WHERE "id" IN ({rejected_placeholders})
+                    ''', rejected_ids)
+        conn.commit()
+
+    # Render jokes on the webpage 
     c.execute('''
                SELECT "jokes"."content", "jokes"."rating", "users"."username","jokes"."user_id", "jokes"."id"
                FROM "jokes"
@@ -102,7 +133,7 @@ def index():
     conn.close()
     # Sending the list of jokes and having joke_comments have each joke_id match up to its associated comment
     # Need username=session.get('username') to check if a user is logged in or out
-    return render_template('index.html', jokes=jokes, username=session.get('username'))
+    return render_template('index.html', jokes=jokes, username=session.get('username'), notifications=notifications)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -122,7 +153,7 @@ def login():
             session['user_id'] = user[0] #set user_id
             session['username'] = username # set username
             session['admin'] = (user[2] == 1) #check if they are admin
-            # flash(f'Welcome, {username}', 'success')
+            flash(f'Welcome, {username}', 'success')
             return redirect(url_for('index')) #redirect back to the home page when you login 
         else:
             flash('Invalid username and/or password', 'error') 
@@ -148,7 +179,7 @@ def submit_joke():
 
         conn = sqlite3.connect('jokes.db')
         c = conn.cursor()
-        c.execute('INSERT into "jokes" ("content", "timestamp", "user_id") VALUES (?, ?, ?)', (joke, timestamp, user_id))
+        c.execute('INSERT into "jokes" ("content", "timestamp", "user_id", "approved") VALUES (?, ?, ?, 0)', (joke, timestamp, user_id))
         conn.commit()
         conn.close()
         flash("Waiting for admin approval. Your joke should appear on the homepage if the joke is approved.", 'success')
@@ -228,7 +259,8 @@ def approve_joke(joke_id):
     c.execute('UPDATE "jokes" SET "approved" = 1 WHERE "id" = ?', (joke_id,)) #update the home page if the joke is approved
     conn.commit()
     conn.close()
-    return '', 204 #no content, but request is successful 
+    flash('Joke approved', 'success')
+    return render_template('moderate.html') 
 
 @app.route('/reject/<int:joke_id>', methods=['POST'])
 def reject_joke(joke_id):
@@ -236,11 +268,16 @@ def reject_joke(joke_id):
         return '', 403
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
-    c.execute('DELETE FROM "jokes" WHERE "id" = ?', (joke_id,)) #delete the joke from the database
+    c.execute('''
+            UPDATE "jokes"
+            SET approved = -1
+            WHERE "id" = ?
+            ''', (joke_id,)
+            )
     conn.commit()
     conn.close()
     flash('Joke rejected', 'error')
-    return '', 204
+    return render_template('moderate.html')
 
 @app.route('/delete_joke/<int:joke_id>', methods=['POST']) #This route is different from the reject route. It allows admins to delete jokes from the homepage(probably a temporary feature)
 def delete_joke(joke_id):

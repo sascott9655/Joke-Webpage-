@@ -57,12 +57,10 @@ document.addEventListener('DOMContentLoaded', function() {
 })
 
 
-
-
 // sets a timer of displaying flash-messages
-// setTimeout(() => {
-//     const flashContainer = document.querySelector('.flash-message');
-//     if(flashContainer) {
-//         flashContainer.style.display = 'none';
-//     }
-// }, 5000);
+setTimeout(() => {
+    const flashContainer = document.querySelector('.flash-messages');
+    if(flashContainer) {
+        flashContainer.style.display = 'none';
+    }
+}, 5000);

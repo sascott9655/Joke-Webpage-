@@ -26,7 +26,7 @@
     <!-- This shows all the flash messages that show on the homepage -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <ul class=flashes> 
+            <ul class="flash-messages"> 
                 {% for category, message in messages %}
                     <li class="{{ category }}">{{ message }}</li>
                 {% endfor %}
@@ -50,6 +50,19 @@
         the moderator, <em> <b> me Sam Scott, </b> </em> before it is officially uploaded to the web. Feel
     welcomed to peruse the website and rate some jokes that you encounter! Thank you! </p>
     </div>
+        {% if notifications %}
+            <div class="notifications">
+                {% for joke in notifications %}
+                    {% if joke.approved == 1 %}
+                        <p class="success">Your joke "{{ joke.content }}" was approved</p>
+                    {% elif joke.approved == -1 %}
+                        <p class="sad"> Your joke "{{ joke.content}}" was rejected</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+
     <main>
         <!-- Scroll Box -->
             <div class="scroll-box">

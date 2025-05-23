@@ -12,12 +12,21 @@
     {% for joke in jokes %}
         <p>Joke: {{ joke['content'] }}</p>
         <p>User: {{ joke['username'] }}</p>
-        <div class="aligning-content" id="joke-{{ joke['id'] }}">
+        <div id="joke-{{ joke['id'] }}">
             <small>Submitted: {{ joke['timestamp'] }}</small>
             <button onclick="approveJoke('{{ joke[0] }}')">Approve</button>
             <button onclick="rejectJoke('{{ joke[0] }}')">Reject</button>
-        </div>
         {% endfor %}
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages"> 
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %} 
 
     <footer>
         <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
