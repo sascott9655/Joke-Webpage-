@@ -1,79 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Joke Details</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <meta charset="UTF-8">
+  <title>Joke Details</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 <body>
-    <h2>Joke Details</h2>
-    <a href="{{ url_for('index') }}">&larr; Back to the homepage</a>
+
+  <h2>Joke Details</h2>
+  <a href="{{ url_for('index') }}">&larr; Back to the homepage</a>
+  <div class="joke">
     <p><strong>Author:</strong> {{ joke.username }}</p>
-    <div class="joke">
     <p><strong>Joke:</strong> {{ joke.content }}</p>
+
     <p><strong>Rating:</strong>
-    {% set full_stars = joke['rating'] | int %}
-    {% set half_stars = 1 if joke['rating'] - full_stars >= 0.5 else 0 %}
-    {% set empty_stars = 5 - full_stars - half_stars %}
-    {% for i in range(full_stars) %}
-    <span style="color:goldenrod";>★</span>   
-    {% endfor %}
-    {% if half_stars %}
-    <span style="color:goldenrod";>⯨</span>
-    {% endif %}
-    {% for i in range(empty_stars) %}
-    <span style="color:goldenrod";>☆</span> 
-    {% endfor %}</p>
+      {% set full_stars = joke['rating'] | int %}
+      {% set half_stars = 1 if joke['rating'] - full_stars >= 0.5 else 0 %}
+      {% set empty_stars = 5 - full_stars - half_stars %}
+
+      {% for i in range(full_stars) %}
+        <span style="color:goldenrod";>★</span>   
+      {% endfor %}
+      {% if half_stars %}
+        <span style="color:goldenrod";>⯨</span>
+      {% endif %}
+      {% for i in range(empty_stars) %}
+        <span style="color:goldenrod";>☆</span> 
+      {% endfor %}
+    </p>
 
     <button class="comment-section-button" type="submit">Show Comments ↓</button>
-                <div class="comment-section-wrapper" style="display:None;">
-                {% if comments %}
-                    {% for comment in comments %}
-                    <hr>
-                        <div class="comment-section">
-                                {% set full_stars = comment['rating'] | int %}
-                                {% set half_stars = 1 if comment['rating'] - full_stars >= 0.5 else 0 %}
-                                {% set empty_stars = 5 - full_stars - half_stars %}
-                                {% for i in range(full_stars) %}
-                                <span style="color:goldenrod";>★</span>   
-                                {% endfor %}
-                                {% if half_stars %}
-                                <span style="color:goldenrod";>⯨</span>
-                                {% endif %}
-                                {% for i in range(empty_stars) %}
-                                <span style="color:goldenrod";>☆</span> 
-                                {% endfor %}
-                            <strong>{{ comment.username }}</strong>
-                            <em> {{ comment.comment }} </em> 
-                            <small>{{ comment.timestamp }}</small><br>
-                        </div>
-                        <br>
-                        <hr>
-                    {% endfor %}
-                {% else %}
-                    <p>No comments yet!</p>
-                {% endif %}
-                </div>
-            {% if session.get('user_id') %}
-                <form class="aligning-content" method="POST" action="{{ url_for('rate_joke', joke_id = joke['id'])}}">
-                    <label for="rating">Rate this joke:</label>
-                    <select name="rating" required>
-                        <option value=""> </option>
-                        {% for i in range(1, 6) %}
-                        <option value="{{ i }}">{{ i }}</option>
-                        {% endfor %}
-                    </select>
-                    <label for="comment">Comment:</label>
-                    <textarea name="comment" required></textarea>
-                    <button type="submit">Submit</button>
-                </form>
-            {% else %}
-                    <br><br>
-                    Please <a href="{{ url_for('login') }}">sign in</a> to comment!
+    <div class="comment-section-wrapper" style="display:None;">
+      {% if comments %}
+        {% for comment in comments %}
+          <hr>
+          <div class="comment-section">
+            {% set full_stars = comment['rating'] | int %}
+            {% set half_stars = 1 if comment['rating'] - full_stars >= 0.5 else 0 %}
+            {% set empty_stars = 5 - full_stars - half_stars %}
+
+            {% for i in range(full_stars) %}
+              <span style="color:goldenrod";>★</span>   
+            {% endfor %}
+            {% if half_stars %}
+              <span style="color:goldenrod";>⯨</span>
             {% endif %}
-     <footer>
-        <hr>
-        <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
+            {% for i in range(empty_stars) %}
+              <span style="color:goldenrod";>☆</span> 
+            {% endfor %}
+
+            <strong>{{ comment.username }}</strong>
+            <em> {{ comment.comment }} </em> 
+            <small>{{ comment.timestamp }}</small><br>
+          </div>
+          <br><hr>
+        {% endfor %}
+      {% else %}
+        <p>No comments yet!</p>
+      {% endif %}
+    </div>
+
+    {% if session.get('user_id') %}
+      <form class="aligning-content" method="POST" action="{{ url_for('rate_joke', joke_id = joke['id'])}}">
+        <label for="rating">Rate this joke:</label>
+        <select name="rating" required>
+          <option value=""> </option>
+          {% for i in range(1, 6) %}
+            <option value="{{ i }}">{{ i }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="comment">Comment:</label>
+        <textarea name="comment" required></textarea>
+
+        <button type="submit">Submit</button>
+      </form>
+    {% else %}
+      <br><br>
+      Please <a href="{{ url_for('login') }}">sign in</a> to comment!
+    {% endif %}
+
+    <footer>
+      <hr>
+      <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
     </footer>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>

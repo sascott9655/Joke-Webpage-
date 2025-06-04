@@ -9,6 +9,7 @@ import sqlite3
 import os 
 from dotenv import load_dotenv
 from datetime import datetime
+from collections import defaultdict
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -411,7 +412,6 @@ def user_detail(user_id):
         return redirect(url_for('search'))
 
     # Fetch all comments *on this user's jokes*
-    comments = []
     if joke_ids:
         placeholders = ','.join('?' for _ in joke_ids)
         c.execute(f'''
@@ -422,13 +422,14 @@ def user_detail(user_id):
                 ORDER BY "ratings"."timestamp" DESC
                 ''', joke_ids)
 
+        comments = defaultdict(list)
+        
         for row in c.fetchall():
-            comments.append({
+            comments[row['joke_id']].append({
                 'comment': row['comment'],
                 'username': row['username'],
                 'rating': row['rating'],
-                'timestamp': row['timestamp'],
-                'joke_id': row['joke_id']
+                'timestamp': row['timestamp']
             })
 
     conn.close()
