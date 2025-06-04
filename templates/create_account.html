@@ -9,15 +9,7 @@
     <header>
         <h1> Create Account </h1>
         <p>Create an account to upload jokes and comment on other people's jokes</p>
-        <hr>
     </header>
-    <nav>
-        <div class="hyperlinks">
-        <a href="/">Home</a>
-        <a href="/login">Login</a>
-        </div>
-        <hr>
-    </nav>
             <div class="aligning-content">
                 <form method="POST">
                 <label>Create Username:
@@ -38,6 +30,8 @@
             </ul>
         {% endif %}
     {% endwith %} 
+    <br><br>
+    <a class ="hyper-links" href="{{ url_for('index') }}">&larr; Back to the homepage</a> 
     <footer>
         <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
     </footer>

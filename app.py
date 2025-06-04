@@ -261,12 +261,13 @@ def approve_joke(joke_id):
     conn.commit()
     conn.close()
     flash('Joke approved', 'success')
-    return render_template('moderate.html') 
+    return redirect(url_for('moderate'))
 
 @app.route('/reject/<int:joke_id>', methods=['POST'])
 def reject_joke(joke_id):
     if not session.get('admin'):
         return '', 403
+    reason = request.form.get('reason')
     conn = sqlite3.connect('jokes.db')
     c = conn.cursor()
     c.execute('''
@@ -277,8 +278,8 @@ def reject_joke(joke_id):
             )
     conn.commit()
     conn.close()
-    flash('Joke rejected', 'error')
-    return render_template('moderate.html')
+    flash(f'Joke rejected. Reason: {reason}', 'error')
+    return redirect(url_for('moderate'))
 
 @app.route('/delete_joke/<int:joke_id>', methods=['POST']) #This route is different from the reject route. It allows admins to delete jokes from the homepage(probably a temporary feature)
 def delete_joke(joke_id):
@@ -422,8 +423,8 @@ def user_detail(user_id):
                 ORDER BY "ratings"."timestamp" DESC
                 ''', joke_ids)
 
-        comments = defaultdict(list)
-        
+        comments = defaultdict(list) #Made this a default dict so you are able to fetch comments based on the joke id and not all the comments associated with that user
+
         for row in c.fetchall():
             comments[row['joke_id']].append({
                 'comment': row['comment'],

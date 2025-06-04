@@ -9,7 +9,7 @@
 <body>
     <h1>Search Users to Find Their Jokes on the Web!</h1>
     <div class="aligning-content">
-    <a href="{{ url_for('index') }}">&larr; Back to the homepage</a>
+    <a class ="hyper-links" href="{{ url_for('index') }}">&larr; Back to the homepage</a> 
     
     <form method="POST" action="{{ url_for('search') }}">
         <input type="text" name="username" placeholder="Search users on the web" autocomplete="off" required>

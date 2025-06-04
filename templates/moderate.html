@@ -7,17 +7,36 @@
 </head>
 <body>
     <h1>Moderator Panel</h1>
-    <a href="{{ url_for('index')  }}">Home</a>
-    <a href="{{ url_for('logout') }}">Logout</a>
+    <a class="hyper-links" href="{{ url_for('index')  }}">Home</a>
+    <a class="hyper-links" href="{{ url_for('logout') }}">Logout</a>
+
     {% for joke in jokes %}
+    <div class="joke-box">
         <p>Joke: {{ joke['content'] }}</p>
         <p>User: {{ joke['username'] }}</p>
-        <div id="joke-{{ joke['id'] }}">
-            <small>Submitted: {{ joke['timestamp'] }}</small>
-            <button onclick="approveJoke('{{ joke[0] }}')">Approve</button>
-            <button onclick="rejectJoke('{{ joke[0] }}')">Reject</button>
-        {% endfor %}
-        </div>
+        <small>Submitted: {{ joke['timestamp'] }}</small>
+
+        <!-- Approve -->
+        <form method="POST" action="{{ url_for('approve_joke', joke_id=joke['id']) }}">
+            <button type="submit">Approve</button>
+        </form>
+
+        <!-- Reject -->
+        <form method="POST" action="{{ url_for('reject_joke', joke_id=joke['id']) }}">
+            <label for="reason">Reject reason:</label>
+            <select name="reason" required>
+                <option value="">Select a reason</option>
+                <option value="Inappropriate content">Inappropriate content</option>
+                <option value="Spam">Spam</option>
+                <option value="Advertising">Advertising</option>
+            </select>
+            <button type="submit">Reject</button>
+        </form>
+    </div>
+    <hr>
+    {% endfor %}
+
+    
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <ul class="flash-messages"> 
