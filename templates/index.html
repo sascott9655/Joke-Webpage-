@@ -1,106 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>Jokes Webpage</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="/static/css/index.css">
 </head>
+
 <body>
+    <nav class="navbar">
+            <ul class="nav-links">
+                    <li> <a href="/">Home</a>
+                    </li>
+                    <li> <a href="/create_account">Create_Account</a>
+                    </li>
+                    <li> <a href="/login">Login</a>
+                    </li>
+                    <li> <a href="/submit_joke">Submit_Joke</a>
+                    </li>
+                    <li> <a href="/search">Search</a>
+                    </li>
+                    <li> <a href="/delete_account">Delete_Account</a>
+                    </li>
+                    <li> {% if session.get('admin') %}
+                        <a href="/moderate">Moderate</a>
+                        {% endif %}
+                    </li>
+                </ul>
+         <!-- Displays username on the homepage if they are logged in -->
+            <div class="user-actions">
+                {% if username %}
+                <h3 class="success2"><strong>Welcome {{ username }}!</strong></h3>
+                <!-- Logout button to log out user -->
+                <form action="{{ url_for('logout') }}" method="GET">
+                    <button type="submit">Logout</button>
+                </form>
+                {% endif %}
+            </div>
+    </nav>
     <header>
         <div class="header-container">
             <div class="spacer"></div>
-        <h1 class="title"> Jokes Webpage </h1>
-        <!-- Displays username on the homepage if they are logged in -->
-            <div class="user-actions">
-                {% if username %}
-                    <h3 class="success2"><strong>Welcome {{ username }}!</strong></h3>
-                    <!-- Logout button to log out user -->
-                    <form action="{{ url_for('logout') }}" method="GET">
-                        <button type="submit">Logout</button> 
-                    </form>
-                {% endif %}
-            </div>
+            <h1 class="title"> Jokes Webpage </h1>
         </div>
-            <p>Upload your best joke and get it rated!</p>
+        <p>Upload your best joke and get it rated!</p>
     </header>
     <!-- This shows all the flash messages that show on the homepage -->
     {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul class="flash-messages"> 
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %} 
+    {% if messages %}
+    <ul class="flash-messages">
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
 
-    <nav>
-        <a class="hyper-links" href="/">Home</a>
-        <a class="hyper-links" href="/login">Login</a>
-        <a class="hyper-links" href="/create_account">Create_Account</a>
-        <a class="hyper-links" href="/submit_joke">Submit_Joke</a>
-        <a class="hyper-links" href="/search">Search</a>
-        <a class="hyper-links" href="/delete_account">Delete_Account</a>
-        {% if session.get('admin') %}
-        <a class="hyper-links" href="/moderate">Moderate</a>
-         {% endif %}
-    </nav>
+
     <div class="instructions">
-    <p> Create an account in order to submit a joke. The joke needs to be approved through
-        the moderator, <em> <b> me Sam Scott, </b> </em> before it is officially uploaded to the web. Feel
-    welcomed to peruse the website and rate some jokes that you encounter! Thank you! </p>
+        <p> Create an account in order to submit a joke. The joke needs to be approved through
+            the moderator, <em> <b> me Sam Scott, </b> </em> before it is officially uploaded to the web. Feel
+            welcomed to peruse the website and rate some jokes that you encounter! Thank you! </p>
     </div>
-        {% if notifications %}
-            <div class="notifications">
-                {% for joke in notifications %}
-                    {% if joke.approved == 1 %}
-                        <p class="success">Your joke "{{ joke.content }}" was approved</p>
-                    {% elif joke.approved == -1 %}
-                        <p class="error"> Your joke "{{ joke.content}}" was rejected</p>
-                    {% endif %}
-                {% endfor %}
-            </div>
+    {% if notifications %}
+    <div class="notifications">
+        {% for joke in notifications %}
+        {% if joke.approved == 1 %}
+        <p class="success">Your joke "{{ joke.content }}" was approved</p>
+        {% elif joke.approved == -1 %}
+        <p class="error"> Your joke "{{ joke.content}}" was rejected due to {{ joke.rejection_reason }}</p>
         {% endif %}
-
-
+        {% endfor %}
+    </div>
+    {% endif %}
     <main>
         <!-- Scroll Box -->
-            <div class="scroll-box">
-                <!-- Display jokes in the scroll box -->
-                {% for joke in jokes %}
-                    <div class="joke-space">
-                        {{ loop.index }}. <a class="user-links" href="{{ url_for('user_detail', user_id=joke.user_id) }}"><strong>{{ joke['username'] }}</a></strong>: {{ joke['content'] }}<br>
-                         Rating:
-                         {% set full_stars = joke['rating'] | int %}
-                         {% set half_stars = 1 if joke['rating'] - full_stars >= 0.5 else 0 %}
-                         {% set empty_stars = 5 - full_stars - half_stars %}
-                         {% for i in range(full_stars) %}
-                            <span style="color:goldenrod";>★</span>   
-                         {% endfor %}
-                         {% if half_stars %}
-                            <span style="color:goldenrod";>⯨</span>
-                         {% endif %}
-                         {% for i in range(empty_stars) %}
-                            <span style="color:goldenrod";>☆</span> 
-                         {% endfor %}
+        <div class="scroll-box">
+            <!-- Display jokes in the scroll box -->
+            {% for joke in jokes %}
+            <div class="joke-space">
+                {{ loop.index }}. <a class="user-links"
+                    href="{{ url_for('user_detail', user_id=joke.user_id) }}"><strong>{{ joke['username']
+                        }}</a></strong>: {{ joke['content'] }}<br>
+                Rating:
+                {% set full_stars = joke['rating'] | int %}
+                {% set half_stars = 1 if joke['rating'] - full_stars >= 0.5 else 0 %}
+                {% set empty_stars = 5 - full_stars - half_stars %}
+                {% for i in range(full_stars) %}
+                <span style="color:goldenrod" ;>★</span>
+                {% endfor %}
+                {% if half_stars %}
+                <span style="color:goldenrod" ;>⯨</span>
+                {% endif %}
+                {% for i in range(empty_stars) %}
+                <span style="color:goldenrod" ;>☆</span>
+                {% endfor %}
 
-                         <a href="{{ url_for('joke_detail', joke_id=joke.id) }}">
-                            <button type="submit">View Comments</button>
-                         </a>
-                         {% if session.get('admin') %}
-                         <form id="delete-button" method="POST" action="{{ url_for('delete_joke', joke_id=joke.id) }}">
-                            <button type="submit">Delete</button>
-                            </form>
-                         {% endif %}
-                         <hr>
-                    </div>
-                {% endfor %} 
-                <!-- End of the list of jokes -->
+                <a href="{{ url_for('joke_detail', joke_id=joke.id) }}">
+                    <button type="submit">View Comments</button>
+                </a>
+                {% if session.get('admin') %}
+                <form id="delete-button" method="POST" action="{{ url_for('delete_joke', joke_id=joke.id) }}">
+                    <button type="submit">Delete</button>
+                </form>
+                {% endif %}
+                <hr>
             </div>
+            {% endfor %}
+            <!-- End of the list of jokes -->
+        </div>
     </main>
+    
     <footer>
         <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
     </footer>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
+
 </html>

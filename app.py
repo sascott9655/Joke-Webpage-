@@ -32,6 +32,7 @@ def initdb():
                 rating REAL DEFAULT 0, 
                 approved INTEGER DEFAULT 0,
                 notified INTEGER DEFAULT 0,
+                rejection_reason TEXT,
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE 
                 --Setting up the table with ON DELETE CASCADE, then deleting the user will automatically delete all related data(which is what we want!) 
             )
@@ -84,8 +85,7 @@ def register():
             return redirect(url_for('index')) #login if successful
     
     return render_template('create_account.html') #default to the create account page 
-
-
+  
 @app.route("/", methods=['GET', 'POST'])
 def index():
     # Connect to the database
@@ -96,7 +96,7 @@ def index():
     # Displays notification to the user if their joke is approved or not
     user_id = session.get('user_id')
     c.execute('''
-            SELECT "id", "content", "approved"
+            SELECT "id", "content", "approved", "rejection_reason"
             FROM "jokes"
             WHERE "user_id" = ? AND approved != 0 and notified = 0
             ''', (user_id,))
@@ -104,6 +104,7 @@ def index():
 
     joke_ids = [joke['id'] for joke in notifications]
 
+    # Set notified = 1 for jokes the user hasn't seen yet
     if joke_ids:
         placeholders = ','.join('?' for _ in joke_ids)
         c.execute(f'''
@@ -111,14 +112,13 @@ def index():
                 SET "notified" = 1
                 WHERE "id" IN ({placeholders})''', joke_ids)
             
-        rejected_ids = [joke['id'] for joke in notifications if joke['approved'] == -1]
-        if rejected_ids:
-            rejected_placeholders = ','.join('?' for _ in rejected_ids)
-            c.execute(f'''
-                    DELETE FROM "jokes"
-                    WHERE "id" IN ({rejected_placeholders})
-                    ''', rejected_ids)
-        conn.commit()
+    # Clean up rejected jokes that the user has already seen  
+    c.execute(f'''
+        DELETE FROM "jokes"
+        WHERE "approved" = -1 AND "notified" = 1
+        ''')
+
+    conn.commit()
 
     # Render jokes on the webpage 
     c.execute('''
@@ -272,9 +272,9 @@ def reject_joke(joke_id):
     c = conn.cursor()
     c.execute('''
             UPDATE "jokes"
-            SET approved = -1
+            SET approved = -1, rejection_reason = ?
             WHERE "id" = ?
-            ''', (joke_id,)
+            ''', (reason, joke_id,)
             )
     conn.commit()
     conn.close()

@@ -1,55 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title> Moderator Panel </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="/static/css/index.css">
 </head>
+
 <body>
     <h1>Moderator Panel</h1>
     <a class="hyper-links" href="{{ url_for('index')  }}">Home</a>
     <a class="hyper-links" href="{{ url_for('logout') }}">Logout</a>
 
     {% for joke in jokes %}
-    <div class="joke-box">
-        <p>Joke: {{ joke['content'] }}</p>
-        <p>User: {{ joke['username'] }}</p>
-        <small>Submitted: {{ joke['timestamp'] }}</small>
-
-        <!-- Approve -->
-        <form method="POST" action="{{ url_for('approve_joke', joke_id=joke['id']) }}">
-            <button type="submit">Approve</button>
-        </form>
-
-        <!-- Reject -->
-        <form method="POST" action="{{ url_for('reject_joke', joke_id=joke['id']) }}">
-            <label for="reason">Reject reason:</label>
-            <select name="reason" required>
-                <option value="">Select a reason</option>
-                <option value="Inappropriate content">Inappropriate content</option>
-                <option value="Spam">Spam</option>
-                <option value="Advertising">Advertising</option>
-            </select>
-            <button type="submit">Reject</button>
-        </form>
+    <div class="parent-container">
+        <div class="joke-box-container">
+            <div class="joke-box">
+                <p class="joke-display">{{ joke['content'] }}</p>
+                <div class="small-div"><small class="submitted">Submitted: {{ joke['timestamp'] }}</small></div>
+            </div>
+            <div class="user-box">
+                <p id="color-grad">{{ joke['username'] }}</p>
+            </div>
+        </div>
     </div>
-    <hr>
+    <!-- Approve -->
+    <form method="POST" action="{{ url_for('approve_joke', joke_id=joke['id']) }}">
+        <button type="submit">Approve</button>
+    </form>
+    <br>
+
+    <!-- Reject -->
+    <form method="POST" action="{{ url_for('reject_joke', joke_id=joke['id']) }}">
+        <label for="reason">Reject reason:</label>
+        <select name="reason" required>
+            <option value="">Select a reason</option>
+            <option value="Inappropriate content">Inappropriate content</option>
+            <option value="Spam">Spam</option>
+            <option value="Advertising">Advertising</option>
+        </select>
+        <button type="submit">Reject</button>
+    </form>
     {% endfor %}
 
-    
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul class="flash-messages"> 
-                    {% for category, message in messages %}
-                        <li class="{{ category }}">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %} 
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class="flash-messages">
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
 
     <footer>
         <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
     </footer>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
+
 </html>
