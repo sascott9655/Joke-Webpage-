@@ -2,17 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Admin Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 <body>
         <h1>Login</h1>
-        <form method="POST" action="{{ url_for('login') }}">
-            <label>Username:</label>
-            <input type="text" name="username"><br><br>
-            <label>Password:</label>
-            <input type="password" name="password"><br><br>
-            <input type="submit" value="Login">
+        <div class="aligning-content">
+        <form method="POST">
+            <label>Username:
+            <input type="text" name="username" required autocomplete="off"><br><br>
+            </label>
+            <label>Password:
+            <input id="mrgn-lft" type="password" name="password" required><br><br>
+            </label>
+            <button type="submit" value="Login">Login!</button>
         </form>
-    </body>
-    </html>
+        </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class=flash-messages> 
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <br><br>
+    <a class ="hyper-links" href="{{ url_for('index') }}">&larr; Back to the homepage</a> 
+    <footer>
+        <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
+</html>

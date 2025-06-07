@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Jokes Webpage</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <header>
+        <h1> Delete Account </h1>
+        <p>Are you sure you want to delete your account. All data associated with this account will be lost. Accounts
+            deleted may no longer be retrieved in anyway. Are you absolutely sure?
+        </p>
+        <hr>
+    </header>
+       <form method="POST">
+            <button id="danger-button" type="submit">Yes delete my account! Confirm no going backs!</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+       </form>
+    <footer>
+        <hr>
+        <p>&copy; 2025 Joke Hub - Created by Sam Scott </p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
+</html>
