@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>Jokes Webpage</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
     <link rel="stylesheet" href="/static/css/index.css">
 </head>
-
 <body>
     <nav class="navbar">
             <ul class="nav-links">
@@ -31,7 +29,7 @@
          <!-- Displays username on the homepage if they are logged in -->
             <div class="user-actions">
                 {% if username %}
-                <h3 class="success2"><strong>Welcome {{ username }}!</strong></h3>
+                <h3 class="green-username"><strong>Welcome {{ username }}!</strong></h3>
                 <!-- Logout button to log out user -->
                 <form action="{{ url_for('logout') }}" method="GET">
                     <button type="submit">Logout</button>

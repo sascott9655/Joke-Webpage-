@@ -1,0 +1,15 @@
+.error{
+	color: white;
+	background-color: darkred;
+	border-color: maroon;
+}
+.success{
+	color: white;
+	background-color: green;
+	border-color: green;
+}
+.sad{
+	color: white;
+	background-color: darkblue;
+	border-color: darkblue;
+}
